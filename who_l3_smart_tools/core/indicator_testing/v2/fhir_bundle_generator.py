@@ -12,6 +12,8 @@ from who_l3_smart_tools.core.indicator_testing.v2.test_artifact_generator import
     generate_test_artifacts,
 )
 
+from bs4 import BeautifulSoup
+
 
 class FhirBundleGenerator:
 
@@ -214,14 +216,61 @@ class FhirBundleGenerator:
                             )
         return libs
 
+    def _find_section_header(self, soup, title):
+        # Find the first h3 tag whose text matches the title exactly (after stripping)
+        for header in soup.find_all("h3"):
+            if header.get_text(strip=True) == title:
+                return header
+        return None
+
+    def gather_terminology_resources(self):
+        """
+        Fetches artifacts.html under the IG root and parses sections by finding h3 tags with
+        'Terminology: Value Sets' and 'Terminology: Code Systems' as content.
+        """
+        terminology_resources = []
+        try:
+            artifacts_url = f"{self.ig_root_url}/artifacts.html"
+            resp = requests.get(artifacts_url)
+            resp.raise_for_status()
+            html_content = resp.text
+
+            soup = BeautifulSoup(html_content, "html.parser")
+            sections = {
+                "Terminology: Value Sets": None,
+                "Terminology: Code Systems": None,
+            }
+            for title in sections:
+                header = self._find_section_header(soup, title)
+                if header:
+                    table = header.find_next("table", class_="grid")
+                    if table:
+                        for row in table.find_all("tr"):
+                            a_tag = row.find("a", href=True)
+                            if a_tag:
+                                json_link = a_tag["href"].replace(".html", ".json")
+                                if not json_link.startswith("http"):
+                                    json_link = (
+                                        f"{self.ig_root_url}/{json_link.lstrip('/')}"
+                                    )
+                                try:
+                                    resource = self.get_fhir_resource(json_link)
+                                    terminology_resources.append(resource)
+                                except Exception as e:
+                                    print(f"Error fetching {json_link}: {e}")
+        except requests.RequestException as e:
+            print(f"Error fetching artifacts.html: {e}")
+        return terminology_resources
+
     def gather_cql_resources(self, mapping_dak_id):
         """
         Gather all CQL related resources from the IG:
          - Measure resource from <ig_root>/Measure-{dak_id_without_periods}.json
          - Main Library resource referenced by the Measure resource.
          - Dependent Library resources based on 'depends-on' fields in the main Library.
+         - Terminology resources (CodeSystem and ValueSet) from artifacts.html.
 
-        Returns a dictionary with keys: 'measure', 'main_library', and 'dependent_libraries'.
+        Returns a dictionary with keys: 'measure', 'main_library', 'dependent_libraries', and 'terminology_resources'.
         """
         # Construct measure URL using dak_id (strip periods)
         measure_url = (
@@ -235,10 +284,12 @@ class FhirBundleGenerator:
         main_library_resource = self.get_fhir_resource(main_library_url)
 
         dependent_libraries = self._gather_dependent_libraries(main_library_resource)
+        terminology_resources = self.gather_terminology_resources()
         return {
             "measure": measure_resource,
             "main_library": main_library_resource,
             "dependent_libraries": dependent_libraries,
+            "terminology_resources": terminology_resources,
         }
 
     def assemble_cql_bundle(self, patient_bundles, cql_resources):
@@ -250,6 +301,20 @@ class FhirBundleGenerator:
             cql_resources["measure"],
             cql_resources["main_library"],
         ] + cql_resources["dependent_libraries"]:
+            if not res.get("id"):
+                res["id"] = str(uuid.uuid4())
+            entries.append(
+                {
+                    "resource": res,
+                    "request": {
+                        "method": "PUT",
+                        "url": f"{res.get('resourceType')}/{res.get('id')}",
+                    },
+                }
+            )
+
+        # Add Terminology resources.
+        for res in cql_resources["terminology_resources"]:
             if not res.get("id"):
                 res["id"] = str(uuid.uuid4())
             entries.append(
