@@ -40,6 +40,11 @@ def generate_mapping_template(phenotype_excel, output_yaml):
     comment_lines = []
     for field in key_fields:
         val = meta_dict.get(field, "")
+
+        # Convert to string if not already
+        if not isinstance(val, str):
+            val = str(val)
+
         # Heading line
         comment_lines.append(f"# **{field}**")
         if (

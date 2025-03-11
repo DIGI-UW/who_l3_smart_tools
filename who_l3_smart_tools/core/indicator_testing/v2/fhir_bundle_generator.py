@@ -63,9 +63,8 @@ class FhirBundleGenerator:
         url = f"{self.ig_root_url}/Patient-{patient_profile_name}Default.json"
         return self.get_fhir_resource(url)
 
-    def get_feature_resources(self, resource_mapping):
-        """Retrieve the profile and default example resource for a given feature mapping."""
-        target_profile = resource_mapping.get("target_profile")
+    def get_profile(self, target_profile):
+        """Retrieve the profile for a given feature mapping."""
         if not target_profile:
             raise ValueError("Missing target_profile in mapping")
         # Query the StructureDefinition:
@@ -73,15 +72,19 @@ class FhirBundleGenerator:
             f"{self.ig_root_url}/StructureDefinition-{target_profile}.json"
         )
         profile = self.get_fhir_resource(target_profile_url)
+
+        return profile
+
+    def get_example_resource(self, example_name, profile):
         resource_type = profile.get("type")
-        # Query the default example:
-        target_example_url = (
-            f"{self.ig_root_url}/{resource_type}-{target_profile}Default.json"
-        )
+
+        # Query the example:
+        target_example_url = f"{self.ig_root_url}/{resource_type}-{example_name}.json"
         example = self.get_fhir_resource(target_example_url)
         # Assign a new unique id to the example resource.
         example["id"] = str(uuid.uuid4())
-        return profile, example
+
+        return example
 
     def update_patient_resource(self, patient_json, row):
         """Update patient example using row data."""
@@ -92,31 +95,19 @@ class FhirBundleGenerator:
                 patient_json["text"] = str(value)
         return patient_json
 
-    def update_feature_resource(self, example, resource_mapping, cell_value):
-        """Update the feature resource example with cell value based on the mapping's FHIR path."""
+    def update_feature_resource(self, template, resource_mapping, value_mapping):
 
         fhir_path = resource_mapping.get("target_fhir_path")
 
-        # Find the cell value in the `values` list of the mapping under `phenotype_value`, and grab the element it is part of.
-        value_mapping = next(
-            (
-                x
-                for x in resource_mapping.get("values", [])
-                if str(x.get("phenotype_value")) == str(cell_value)
-            ),
-            None,
-        )
+        if not fhir_path:
+            print("No FHIR path specified in resource mapping. Skipping update.")
+            return
 
-        # If the value is not found, return the example as is.
-        if not value_mapping:
-            return example
+        key = fhir_path.split(".")[-1]
+        target_value = value_mapping.get("fhir_value")
+        template[key] = target_value
 
-        # If value is found, update the example resource with the value at the field specified by the FHIR path.
-        if fhir_path:
-            key = fhir_path.split(".")[-1]
-            target_value = value_mapping.get("fhir_value")
-            example[key] = target_value
-        return example
+        return
 
     def build_bundle(self, patient_resource, feature_resources):
         """Construct a FHIR transaction Bundle from patient and feature resources."""
@@ -144,6 +135,9 @@ class FhirBundleGenerator:
         Groups feature mappings by grouping_id, updates their resources, applies 'exists'
         flags, and ensures no conflicting exists values.
         Returns a list of updated feature resources (only those where exists is not False).
+
+        Note: Example templates can be supplied per-column and have different values based on the associated
+        fhir path and cell value
         """
         grouping_resources = {}
         for column_name, cell_value in row.iloc[0].items():
@@ -151,40 +145,107 @@ class FhirBundleGenerator:
             if column_name in ["Patient Phenotype ID", "Phenotype Description"]:
                 continue
             resource_mapping = self.mapping_manager.get_feature_mapping(column_name)
+
             if not resource_mapping:
+
+                print(f"No mapping found for feature '{column_name}'. Skipping.")
                 continue
-            grouping_id = resource_mapping.get("grouping_id")
-            if grouping_id not in grouping_resources:
-                try:
-                    # Retrieve default resource example for the grouping.
-                    _, example = self.get_feature_resources(resource_mapping)
-                except Exception as e:
-                    print(
-                        f"Skipping grouping '{grouping_id}' for feature '{column_name}' due to error: {e}"
-                    )
-                    continue
-                grouping_resources[grouping_id] = {"resource": example, "exists": None}
-            # Evaluate exists flag from mapping values.
-            exists_val = None
-            for val_entry in resource_mapping.get("values", []):
-                if str(val_entry.get("phenotype_value")) == str(cell_value):
-                    if "exists" in val_entry:
-                        exists_val = val_entry["exists"]
-                        break
-            if exists_val is not None:
-                if grouping_resources[grouping_id]["exists"] is None:
-                    grouping_resources[grouping_id]["exists"] = exists_val
-                    grouping_resources[grouping_id]["resource"]["exists"] = exists_val
-                elif grouping_resources[grouping_id]["exists"] != exists_val:
-                    raise ValueError(
-                        f"Conflicting exists values for grouping {grouping_id}"
-                    )
-            # Update the feature resource based on FHIR path.
-            grouping_resources[grouping_id]["resource"] = self.update_feature_resource(
-                grouping_resources[grouping_id]["resource"],
-                resource_mapping,
-                cell_value,
+
+            # Group resources by grouping id; create default group if no grouping id.
+            grouping_id = resource_mapping.get("grouping_id", "default")
+
+            # Retrieve relevant value mapping based on cell value
+            value_mapping = next(
+                (
+                    x
+                    for x in resource_mapping.get("values", [])
+                    if str(x.get("phenotype_value")) == str(cell_value)
+                ),
+                None,
             )
+
+            if not value_mapping:
+                print(
+                    f"No value mapping found for cell value '{cell_value}' in feature '{column_name}'. Skipping."
+                )
+                continue
+
+            # Check if value mapping contains an exists: <val> field
+            # By default, exists_val is true
+            exists_val = True
+            if "exists" in value_mapping:
+                exists_val = value_mapping["exists"]
+
+            # Get target profile based on resource mapping
+            target_profile_name = resource_mapping.get("target_profile")
+            if not target_profile_name:
+                print(
+                    f"Missing target_profile in mapping for feature '{column_name}'. Skipping."
+                )
+                continue
+
+            profile = self.get_profile(target_profile_name)
+
+            # Get target example resource based on value mapping
+            if "target_example" in value_mapping:
+                target_example_name = value_mapping["target_example"]
+            else:
+                # Default target example based on resource mapping
+                target_example_name = target_profile_name + "Default"
+
+            try:
+                target_example = self.get_example_resource(target_example_name, profile)
+            except Exception as e:
+                print(
+                    f"Skipping grouping for feature '{column_name}' due to error: {e}"
+                )
+                continue
+
+            # Initialize grouping if not already done.
+            foundTemplate = None
+            if grouping_id not in grouping_resources:
+                foundTemplate = {
+                    "name": target_example_name,
+                    "template": target_example,
+                    "exists": exists_val,
+                }
+                grouping_resources[grouping_id] = {
+                    "template_resources": [foundTemplate]
+                }
+            else:
+                # Find template resource by name and update if exists
+                found = False
+                for template in grouping_resources[grouping_id]["template_resources"]:
+                    if template["name"] == target_example_name:
+                        # Handle exists flag
+                        if "exists" not in template or template["exists"] is None:
+                            template["exists"] = exists_val
+                        elif template["exists"] != exists_val:
+                            print(
+                                f"Conflicting exists values for grouping {grouping_id} and template {target_example_name}"
+                            )
+                            template["exists"] = False
+
+                        found = True
+                        foundTemplate = template
+                        break
+
+                if not found:
+                    foundTemplate = {
+                        "name": target_example_name,
+                        "template": target_example,
+                        "exists": exists_val,
+                    }
+                    grouping_resources[grouping_id]["template_resources"].append(
+                        foundTemplate
+                    )
+
+            # Update the feature resource based on FHIR path.
+            if foundTemplate:
+                self.update_feature_resource(
+                    foundTemplate['template'], resource_mapping, value_mapping
+                )
+
         # Return resources only if exists flag is not false.
         return [
             grp["resource"]

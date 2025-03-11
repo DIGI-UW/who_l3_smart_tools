@@ -378,9 +378,10 @@ def generate_test_artifacts(phenotype_dataset, reporting_period):
             "resource": res,
             "request": {
                 "method": "PUT",
-                "url": f"{res.get('resourceType')}/{res.get('id')}"
-            }
+                "url": f"{res.get('resourceType')}/{res.get('id')}",
+            },
         }
+
     measure_report = transaction_wrap(measure_report)
     test_plan = transaction_wrap(test_plan)
     test_script = transaction_wrap(test_script)

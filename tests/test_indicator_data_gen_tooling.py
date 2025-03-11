@@ -26,16 +26,16 @@ class TestIndicatorDataGenTooling(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.input_excel = "tests/data/l2/test_indicators.xlsx"
-        cls.phenotype_template_excel = "tests/data/testing/phenotype_IND73.xlsx"
+        cls.phenotype_template_excel = "tests/data/testing/phenotype_INDEX.xlsx"
         cls.dataset_excel = "tests/output/dataset_v2.xlsx"
-        cls.measure_report_json = "tests/output/measure_report_v2.json"
-        cls.mapping_template_yaml = "tests/output/mapping_template_IND73.yaml"
+        cls.measure_report_json = "tests/output/measure_report_ex.json"
+        cls.mapping_template_yaml = "tests/output/mapping_template_INDEX.yaml"
         os.makedirs("tests/output/testing", exist_ok=True)
         os.makedirs("tests/output", exist_ok=True)
 
     def test_generate_phenotype_template(self):
         generate_phenotype_xlsx(
-            self.input_excel, self.phenotype_template_excel, "HIV.IND.73"
+            self.input_excel, self.phenotype_template_excel, "HIV.IND.EX"
         )
         df = pd.read_excel(self.phenotype_template_excel)
         self.assertEqual(len(df), 3)
@@ -50,7 +50,7 @@ class TestIndicatorDataGenTooling(unittest.TestCase):
 
     def test_generate_mapping_template(self):
         # Generate mapping template using the phenotype file and output YAML location.
-        phenotype_file = "tests/data/testing/phenotype_IND73.xlsx"
+        phenotype_file = "tests/data/testing/phenotype_INDEX.xlsx"
         output_yaml = self.mapping_template_yaml
 
         # Ensure output directory exists
