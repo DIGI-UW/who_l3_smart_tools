@@ -97,9 +97,8 @@ class TestFhirBundleTests(unittest.TestCase):
     # Skip for CI
     # @unittest.skip("Skip for CI")
     def setUp(self):
-        # Prerequisite: generate FHIR bundles for tests
-        phenotype_file = "tests/data/scaffolding/v2/phenotype_HIVIND20_filled.xlsx"
-        mapping_file = "tests/data/testing/phenotypes_IND20.yaml"
+        phenotype_file = "tests/data/scaffolding/v2/phenotype_INDEX.xlsx"
+        mapping_file = "tests/data/testing/mapping_template_INDEX.yaml"
         output_directory = "tests/output/fhir_bundles"
         if os.path.exists(output_directory):
             shutil.rmtree(output_directory)
@@ -116,9 +115,8 @@ class TestFhirBundleTests(unittest.TestCase):
           - Verifies that output is created inside a subfolder named after the dak_id.
           - Checks that the test_bundle.json and patient_data_bundle_<Patient Phenotype ID>.json files exist.
         """
-        # Removed generation block. Now using prereq bundles generated in setUpClass.
         # Retrieve the dak_id from the mapping file.
-        expected_dak_id = "HIV.IND.20"
+        expected_dak_id = "HIV.IND.EX"
         subfolder = os.path.join("tests/output/fhir_bundles", expected_dak_id)
         self.assertTrue(os.path.isdir(subfolder), f"Subfolder {subfolder} not found.")
 

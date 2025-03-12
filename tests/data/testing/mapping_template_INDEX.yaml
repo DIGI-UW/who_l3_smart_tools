@@ -1,0 +1,52 @@
+# **Indicator definition**
+#   Example Indicator
+#
+# **Denominator calculation**
+#   1
+#
+# **Numerator calculation**
+#   Has any condition associated
+#
+# **Disaggregation data elements**
+#
+#   - Gender
+#
+# **Numerator exclusions**
+#   
+#
+# **Denominator exclusions**
+#   
+#
+# **Category**
+#   HIV prevention
+#
+# **What it measures**
+#   Example
+#
+# **Rationale**
+#   Example
+#
+# **Method of measurement**
+#   Example
+#
+# **List of all data elements included in numerator and denominator**
+#   
+#
+
+dak_id: HIV.IND.EX
+patient_profile: HivPatient
+reporting_period:
+  end: '2025-01-30'
+  start: '2025-01-01'
+features:
+- id: '0'
+  name: Number of Conditions
+  target_profile: 'HivCondition'
+  values:
+  - phenotype_value: '1'
+    exists: true
+  - phenotype_value: '0'
+    exists: false
+  - phenotype_value: '2'
+    exists: true
+    target_examples: ['HivConditionDefault', 'HivConditionDouble']

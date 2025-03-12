@@ -169,7 +169,7 @@ class FhirBundleGenerator:
                     f"No value mapping found for cell value '{cell_value}' in feature '{column_name}'. Skipping."
                 )
                 continue
-
+            
             # Check if value mapping contains an exists: <val> field
             # By default, exists_val is true
             exists_val = True
@@ -186,71 +186,78 @@ class FhirBundleGenerator:
 
             profile = self.get_profile(target_profile_name)
 
+            target_examples = []
             # Get target example resource based on value mapping
             if "target_example" in value_mapping:
-                target_example_name = value_mapping["target_example"]
+                target_example_names = [value_mapping["target_example"]]
+            elif "target_examples" in resource_mapping:
+                target_example_names = resource_mapping["target_examples"]
             else:
                 # Default target example based on resource mapping
-                target_example_name = target_profile_name + "Default"
+                target_example_names = [target_profile_name + "Default"]
 
-            try:
-                target_example = self.get_example_resource(target_example_name, profile)
-            except Exception as e:
-                print(
-                    f"Skipping grouping for feature '{column_name}' due to error: {e}"
-                )
-                continue
+            for target_example_name in target_example_names:
+                try:
+                    target_examples.append({"name": target_example_name, "example": self.get_example_resource(target_example_name, profile)})
+                except Exception as e:
+                    print(
+                        f"Skipping grouping for feature '{column_name}' due to error: {e}"
+                    )
+                    continue
 
-            # Initialize grouping if not already done.
-            foundTemplate = None
-            if grouping_id not in grouping_resources:
-                foundTemplate = {
-                    "name": target_example_name,
-                    "template": target_example,
-                    "exists": exists_val,
-                }
-                grouping_resources[grouping_id] = {
-                    "template_resources": [foundTemplate]
-                }
-            else:
-                # Find template resource by name and update if exists
-                found = False
-                for template in grouping_resources[grouping_id]["template_resources"]:
-                    if template["name"] == target_example_name:
-                        # Handle exists flag
-                        if "exists" not in template or template["exists"] is None:
-                            template["exists"] = exists_val
-                        elif template["exists"] != exists_val:
-                            print(
-                                f"Conflicting exists values for grouping {grouping_id} and template {target_example_name}"
-                            )
-                            template["exists"] = False
+            for target_example_entry in target_examples:
+                target_example_name = target_example_entry["name"]
+                target_example = target_example_entry["example"]
 
-                        found = True
-                        foundTemplate = template
-                        break
-
-                if not found:
+                # Initialize grouping if not already done.
+                foundTemplate = None
+                if grouping_id not in grouping_resources:
                     foundTemplate = {
                         "name": target_example_name,
                         "template": target_example,
                         "exists": exists_val,
                     }
-                    grouping_resources[grouping_id]["template_resources"].append(
-                        foundTemplate
+                    grouping_resources[grouping_id] = [foundTemplate]                    
+                else:
+                    # Find template resource by name and update if exists
+                    found = False
+                    for template in grouping_resources[grouping_id]:
+                        if template["name"] == target_example_name:
+                            # Handle exists flag
+                            if "exists" not in template or template["exists"] is None:
+                                template["exists"] = exists_val
+                            elif template["exists"] != exists_val:
+                                print(
+                                    f"Conflicting exists values for grouping {grouping_id} and template {target_example_name}"
+                                )
+                                template["exists"] = False
+
+                            found = True
+                            foundTemplate = template
+                            break
+
+                    if not found:
+                        foundTemplate = {
+                            "name": target_example_name,
+                            "template": target_example,
+                            "exists": exists_val,
+                        }
+                        grouping_resources[grouping_id].append(
+                            foundTemplate
+                        )
+
+                # Update the feature resource based on FHIR path.
+                if foundTemplate:
+                    self.update_feature_resource(
+                        foundTemplate['template'], resource_mapping, value_mapping
                     )
 
-            # Update the feature resource based on FHIR path.
-            if foundTemplate:
-                self.update_feature_resource(
-                    foundTemplate['template'], resource_mapping, value_mapping
-                )
-
-        # Return resources only if exists flag is not false.
+        # Return resources if exists is not False
         return [
-            grp["resource"]
-            for grp in grouping_resources.values()
-            if grp["exists"] is not False
+            templateEntry["template"]
+            for group in grouping_resources.values()
+            for templateEntry in group
+            if templateEntry["exists"] is not False
         ]
 
     def _gather_dependent_libraries(self, library_resource, visited=None):
