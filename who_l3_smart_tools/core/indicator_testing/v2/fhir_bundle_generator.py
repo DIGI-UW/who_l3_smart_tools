@@ -132,26 +132,31 @@ class FhirBundleGenerator:
 
     def _group_features(self, row):
         """
-        Groups feature mappings by grouping_id, updates their resources, applies 'exists'
-        flags, and ensures no conflicting exists values.
-        Returns a list of updated feature resources (only those where exists is not False).
+        Parse each feature column from the phenotype row and map values to FHIR resources.
 
-        Note: Example templates can be supplied per-column and have different values based on the associated
-        fhir path and cell value
+        Process:
+          1. Retrieve a mapping for the column (feature).
+          2. Determine how many example resources need to be created for the feature, based on
+             target_example or target_examples in the value mapping.
+          3. For each needed example resource:
+             • Initialize or fetch existing template from grouping_resources.
+             • Update the exists status if necessary.
+             • Use update_feature_resource to apply changes according to the FHIR path.
+          4. Return a list of feature resources where 'exists' is not False.
         """
         grouping_resources = {}
         for column_name, cell_value in row.iloc[0].items():
+            
             # Skip patient-specific columns.
             if column_name in ["Patient Phenotype ID", "Phenotype Description"]:
                 continue
+            
             resource_mapping = self.mapping_manager.get_feature_mapping(column_name)
 
             if not resource_mapping:
-
                 print(f"No mapping found for feature '{column_name}'. Skipping.")
                 continue
 
-            # Group resources by grouping id; create default group if no grouping id.
             grouping_id = resource_mapping.get("grouping_id", "default")
 
             # Retrieve relevant value mapping based on cell value
@@ -169,7 +174,7 @@ class FhirBundleGenerator:
                     f"No value mapping found for cell value '{cell_value}' in feature '{column_name}'. Skipping."
                 )
                 continue
-            
+
             # Check if value mapping contains an exists: <val> field
             # By default, exists_val is true
             exists_val = True
@@ -186,65 +191,20 @@ class FhirBundleGenerator:
 
             profile = self.get_profile(target_profile_name)
 
-            target_examples = []
-            # Get target example resource based on value mapping
-            if "target_example" in value_mapping:
-                target_example_names = [value_mapping["target_example"]]
-            elif "target_examples" in resource_mapping:
-                target_example_names = resource_mapping["target_examples"]
-            else:
-                # Default target example based on resource mapping
-                target_example_names = [target_profile_name + "Default"]
+            # Get target example names
+            target_example_names = self._get_target_example_names(value_mapping, target_profile_name)
 
             for target_example_name in target_example_names:
                 try:
-                    target_examples.append({"name": target_example_name, "example": self.get_example_resource(target_example_name, profile)})
+                    target_example = self.get_example_resource(target_example_name, profile)
                 except Exception as e:
                     print(
                         f"Skipping grouping for feature '{column_name}' due to error: {e}"
                     )
                     continue
 
-            for target_example_entry in target_examples:
-                target_example_name = target_example_entry["name"]
-                target_example = target_example_entry["example"]
-
-                # Initialize grouping if not already done.
-                foundTemplate = None
-                if grouping_id not in grouping_resources:
-                    foundTemplate = {
-                        "name": target_example_name,
-                        "template": target_example,
-                        "exists": exists_val,
-                    }
-                    grouping_resources[grouping_id] = [foundTemplate]                    
-                else:
-                    # Find template resource by name and update if exists
-                    found = False
-                    for template in grouping_resources[grouping_id]:
-                        if template["name"] == target_example_name:
-                            # Handle exists flag
-                            if "exists" not in template or template["exists"] is None:
-                                template["exists"] = exists_val
-                            elif template["exists"] != exists_val:
-                                print(
-                                    f"Conflicting exists values for grouping {grouping_id} and template {target_example_name}"
-                                )
-                                template["exists"] = False
-
-                            found = True
-                            foundTemplate = template
-                            break
-
-                    if not found:
-                        foundTemplate = {
-                            "name": target_example_name,
-                            "template": target_example,
-                            "exists": exists_val,
-                        }
-                        grouping_resources[grouping_id].append(
-                            foundTemplate
-                        )
+                # Get or create template
+                foundTemplate = self._get_or_create_template(grouping_resources, grouping_id, target_example_name, target_example, exists_val)
 
                 # Update the feature resource based on FHIR path.
                 if foundTemplate:
@@ -252,13 +212,59 @@ class FhirBundleGenerator:
                         foundTemplate['template'], resource_mapping, value_mapping
                     )
 
+        # Filter and return resources where exists is not False
+        clean_grouping_resources = {
+            group_id: [
+                templateEntry for templateEntry in templates
+                if templateEntry["exists"] is not False
+            ]
+            for group_id, templates in grouping_resources.items()
+        }
+
         # Return resources if exists is not False
-        return [
-            templateEntry["template"]
-            for group in grouping_resources.values()
-            for templateEntry in group
-            if templateEntry["exists"] is not False
-        ]
+        return clean_grouping_resources
+
+    def _get_target_example_names(self, value_mapping, target_profile_name):
+        """
+        Extracts target example names from the value mapping.
+        """
+        if "target_example" in value_mapping:
+            return [value_mapping["target_example"]]
+        elif "target_examples" in value_mapping:
+            return value_mapping["target_examples"]
+        else:
+            return [target_profile_name + "Default"]
+
+    def _get_or_create_template(self, grouping_resources, grouping_id, target_example_name, target_example, exists_val):
+        """
+        Retrieves or creates a template resource within the grouping.
+        """
+        if grouping_id not in grouping_resources:
+            grouping_resources[grouping_id] = []
+            foundTemplate = None
+        else:
+            foundTemplate = next((t for t in grouping_resources[grouping_id] if t["name"] == target_example_name), None)
+
+        if not foundTemplate:
+            foundTemplate = {
+                "name": target_example_name,
+                "template": target_example,
+                "exists": exists_val,
+            }
+            if grouping_id not in grouping_resources:
+                grouping_resources[grouping_id] = []
+            grouping_resources[grouping_id].append(foundTemplate)
+        else:
+            # Merge 'exists' status
+            if "exists" not in foundTemplate or foundTemplate["exists"] is None:
+                foundTemplate["exists"] = exists_val
+            elif foundTemplate["exists"] != exists_val:
+                print(
+                    f"Conflicting exists values for grouping {grouping_id} and template {target_example_name}"
+                )
+                foundTemplate["exists"] = False
+
+        return foundTemplate
 
     def _gather_dependent_libraries(self, library_resource, visited=None):
         if visited is None:
@@ -474,14 +480,16 @@ class FhirBundleGenerator:
 
             # Process feature resources for this patient.
             feature_resources = self._group_features(row)
+            flat_resources = []
             # Update feature resources to point to the new patient id if needed.
-            feature_resources = [
-                self._update_patient_references(resource, new_patient_id)
-                for resource in feature_resources
-            ]
-
+            # Flatten the feature resources into a list.
+            for resource_list in feature_resources.values():
+                for resource_entry in resource_list:
+                    self._update_patient_references(resource_entry['template'], new_patient_id)
+                    flat_resources.append(resource_entry['template'])
+                
             # Create patient bundle.
-            bundle = self.build_bundle(patient_resource, feature_resources)
+            bundle = self.build_bundle(patient_resource, flat_resources)
             bundle["id"] = str(uuid.uuid4())
 
             # Save the bundle to file.

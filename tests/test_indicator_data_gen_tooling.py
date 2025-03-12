@@ -153,6 +153,24 @@ class TestFhirBundleTests(unittest.TestCase):
         ]
         self.assertTrue(len(patient_bundles) > 0, "No patient bundles were generated.")
 
+        # Make sure that the cql_bundle has the right contents based on the example indicator files:
+        # - 3 Patients
+        # - 3 Conditions (1 patient with 0, one with 1, one with 2)
+        # - 1 Measure
+        # - 1 Library
+        with open(cql_bundle_path, "r") as f:
+            cql_bundle = json.load(f)
+        self.assertIn("entry", cql_bundle)
+        entries = cql_bundle.get("entry", [])
+        self.assertGreaterEqual(len(entries), 6)  
+        resource_types = [entry["resource"]["resourceType"] for entry in entries]
+        self.assertEqual(resource_types.count("Patient"), 3)
+        self.assertEqual(resource_types.count("Condition"), 3)
+        self.assertEqual(resource_types.count("Measure"), 1)
+        self.assertEqual(resource_types.count("Library"), 1)
+        
+
+
     def test_load_and_evaluate_indicator(self):
         CLEANUP_HAPI = False  # Set to False to skip cleanup
         FHIR_SERVER_URL = "http://localhost:8080/fhir"
