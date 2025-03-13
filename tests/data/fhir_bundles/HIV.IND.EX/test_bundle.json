@@ -1,0 +1,47 @@
+{
+  "resourceType": "MeasureReport",
+  "id": "4ac53e6a-6cb0-442b-9217-34f7df611393",
+  "status": "final",
+  "type": "summary",
+  "date": "2025-03-13T08:59:31.207514",
+  "period": {
+    "start": "2025-01-01",
+    "end": "2025-01-30"
+  },
+  "group": [
+    {
+      "population": [
+        {
+          "code": {
+            "coding": [
+              {
+                "code": "initial-population"
+              }
+            ]
+          },
+          "count": 3
+        },
+        {
+          "code": {
+            "coding": [
+              {
+                "code": "numerator"
+              }
+            ]
+          },
+          "count": 0
+        },
+        {
+          "code": {
+            "coding": [
+              {
+                "code": "denominator"
+              }
+            ]
+          },
+          "count": 3
+        }
+      ]
+    }
+  ]
+}

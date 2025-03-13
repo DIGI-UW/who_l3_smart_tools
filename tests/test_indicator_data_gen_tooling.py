@@ -98,8 +98,8 @@ class TestFhirBundleTests(unittest.TestCase):
     # Skip for CI
     # @unittest.skip("Skip for CI")
     def setUp(self):
-        phenotype_file = "tests/data/scaffolding/v2/phenotype_INDEX.xlsx"
-        mapping_file = "tests/data/testing/mapping_template_INDEX.yaml"
+        phenotype_file = "tests/data/scaffolding/v2/phenotype_HIVIND20_filled.xlsx"
+        mapping_file = "tests/data/scaffolding/v2/phenotypes_IND20.yaml"
         output_directory = "tests/output/fhir_bundles"
         if os.path.exists(output_directory):
             shutil.rmtree(output_directory)
@@ -117,7 +117,7 @@ class TestFhirBundleTests(unittest.TestCase):
           - Checks that the test_bundle.json and patient_data_bundle_<Patient Phenotype ID>.json files exist.
         """
         # Retrieve the dak_id from the mapping file.
-        expected_dak_id = "HIV.IND.EX"
+        expected_dak_id = "HIV.IND.20"
         subfolder = os.path.join("tests/output/fhir_bundles", expected_dak_id)
         self.assertTrue(os.path.isdir(subfolder), f"Subfolder {subfolder} not found.")
 
@@ -183,7 +183,7 @@ class TestFhirBundleTests(unittest.TestCase):
             self.fail(f"FHIR server check failed: {e}")
 
         # Load and post the CQL bundle
-        subfolder = os.path.join("tests/output/fhir_bundles", "HIV.IND.EX")
+        subfolder = os.path.join("tests/output/fhir_bundles", "HIV.IND.20")
         cql_bundle_path = os.path.join(subfolder, "cql_bundle.json")
         with open(cql_bundle_path, "r") as f:
             cql_bundle = json.load(f)
@@ -202,7 +202,7 @@ class TestFhirBundleTests(unittest.TestCase):
 
         post_resp = requests.post(f"{FHIR_SERVER_URL}", json=cql_bundle)
         if not post_resp.ok:
-            raise Exception(
+            raise requests.HTTPError(
                 f"Error loading CQL bundle: {post_resp.status_code} - {post_resp.text}"
             )
 
@@ -218,7 +218,7 @@ class TestFhirBundleTests(unittest.TestCase):
         self.assertIsNotNone(period_end, "Period end missing in expected report.")
 
         # Execute the $evaluate-measure operation using the period from expected report.
-        evaluate_url = f"{FHIR_SERVER_URL}/Measure/HIVINDEX/$evaluate-measure"
+        evaluate_url = f"{FHIR_SERVER_URL}/Measure/HIVIND20/$evaluate-measure"
         params = {"periodStart": period_start, "periodEnd": period_end}
         resp = requests.get(evaluate_url, params=params)
 
@@ -231,9 +231,9 @@ class TestFhirBundleTests(unittest.TestCase):
         # Make sure measureScore is equal to 2/3
         self.assertIn("measureScore", resp.text, "Measure score not found in response.")
         measure_score = resp.json().get("measureScore")
-        if measure_score is not None:
+        if measure_score is not None and measure_score.value is not None:
             self.assertAlmostEqual(
-                measure_score,
+                measure_score.value,
                 0.6666666666666666,
                 delta=0.0001,
                 msg="Measure score is not equal to 2/3.",

@@ -1,0 +1,82 @@
+{
+  "resourceType": "Bundle",
+  "type": "transaction",
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "id": "6fa6d4e4-0295-43d6-96bf-1f26439ee3c4",
+        "meta": {
+          "profile": [
+            "http://smart.who.int/hiv/StructureDefinition/HivPatient"
+          ]
+        },
+        "active": true,
+        "gender": "female",
+        "birthDate": "1990-01-02",
+        "address": [
+          {
+            "text": "Sample Address",
+            "country": "US"
+          }
+        ],
+        "identifier": [
+          {
+            "value": 1
+          }
+        ],
+        "text": "Has associated condtion"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/6fa6d4e4-0295-43d6-96bf-1f26439ee3c4"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Condition",
+        "id": "f71d32e3-466e-4097-b1b1-79532decb8b0",
+        "meta": {
+          "profile": [
+            "http://smart.who.int/hiv/StructureDefinition/HivCondition"
+          ]
+        },
+        "clinicalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+              "code": "active"
+            }
+          ]
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+                "code": "encounter-diagnosis"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://smart.who.int/hiv/CodeSystem/HIVConcepts",
+              "code": "HIV.B.DE116"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/6fa6d4e4-0295-43d6-96bf-1f26439ee3c4"
+        },
+        "onsetDateTime": "2025-01-15T08:30:00Z"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Condition/f71d32e3-466e-4097-b1b1-79532decb8b0"
+      }
+    }
+  ],
+  "id": "f17321f0-c0bc-45ed-b396-d0f6973da7e3"
+}

@@ -8,7 +8,7 @@ Title: "HIV.IND.20 Individuals testing positive for HIV"
 * url = "http://smart.who.int/hiv/Measure/HIVIND20"
 * status = #draft
 * experimental = true
-* date = "2024-08-18"
+* date = "2025-03-13"
 * name = "HIVIND20"
 * title = "HIV.IND.20 Individuals testing positive for HIV"
 * publisher = "World Health Organization (WHO)"

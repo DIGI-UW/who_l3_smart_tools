@@ -83,16 +83,16 @@ define "Gender Observation":
 @description: Client identifies as female
 */
 // TODO: Replace placeholder with relevant CQL logic
-define "Female":
-  exists "Female Condition"
-    or exists "Female Observation"
-define "Female Condition":
-  [Condition: Concepts."Female"]
-define "Female Observation":
+define "Female A.DE19":
+  exists "Female A.DE19 Condition"
+    or exists "Female A.DE19 Observation"
+define "Female A.DE19 Condition":
+  [Condition: Concepts."Female - HIV.A.DE19"]
+define "Female A.DE19 Observation":
   "Gender Observation" O
     where O.status in { 'final', 'amended', 'corrected' }
-      and O.value ~ Concepts."Female"
-/* End of Female */
+      and O.value ~ Concepts."Female - HIV.A.DE19"
+/* End of Female A.DE19 */
 
 /*
 @dataElement: HIV.A.DE20 - Male
@@ -100,16 +100,16 @@ define "Female Observation":
 @description: Client identifies as male
 */
 // TODO: Replace placeholder with relevant CQL logic
-define "Male":
-  exists "Male Condition"
-    or exists "Male Observation"
-define "Male Condition":
-  [Condition: Concepts."Male"]
-define "Male Observation":
+define "Male A.DE20":
+  exists "Male A.DE20 Condition"
+    or exists "Male A.DE20 Observation"
+define "Male A.DE20 Condition":
+  [Condition: Concepts."Male - HIV.A.DE20"]
+define "Male A.DE20 Observation":
   "Gender Observation" O
     where O.status in { 'final', 'amended', 'corrected' }
-      and O.value ~ Concepts."Male"
-/* End of Male */
+      and O.value ~ Concepts."Male - HIV.A.DE20"
+/* End of Male A.DE20 */
 
 /*
 @dataElement: HIV.A.DE21 - Transgender male
@@ -292,16 +292,16 @@ define "Type of contact or partner for partner services Observation":
 @description: Client is the biological child of the person that referred the client for family services
 */
 // TODO: Replace placeholder with relevant CQL logic
-define "Biological child":
-  exists "Biological child Condition"
-    or exists "Biological child Observation"
-define "Biological child Condition":
-  [Condition: Concepts."Biological child"]
-define "Biological child Observation":
+define "Biological child B.DE9":
+  exists "Biological child B.DE9 Condition"
+    or exists "Biological child B.DE9 Observation"
+define "Biological child B.DE9 Condition":
+  [Condition: Concepts."Biological child - HIV.B.DE9"]
+define "Biological child B.DE9 Observation":
   "Type of contact or partner for partner services Observation" O
     where O.status in { 'final', 'amended', 'corrected' }
-      and O.value ~ Concepts."Biological child"
-/* End of Biological child */
+      and O.value ~ Concepts."Biological child - HIV.B.DE9"
+/* End of Biological child B.DE9 */
 
 /*
 @dataElement: HIV.B.DE10 - Drug-injecting partner
@@ -557,16 +557,16 @@ define "Sex worker B.DE51 Observation":
 @description: Client is a man who has sex with men
 */
 // TODO: Replace placeholder with relevant CQL logic
-define "Men who have sex with men":
-  exists "Men who have sex with men Condition"
-    or exists "Men who have sex with men Observation"
-define "Men who have sex with men Condition":
-  [Condition: Concepts."Men who have sex with men"]
-define "Men who have sex with men Observation":
+define "Men who have sex with men B.DE52":
+  exists "Men who have sex with men B.DE52 Condition"
+    or exists "Men who have sex with men B.DE52 Observation"
+define "Men who have sex with men B.DE52 Condition":
+  [Condition: Concepts."Men who have sex with men - HIV.B.DE52"]
+define "Men who have sex with men B.DE52 Observation":
   "Key population member type B.DE50 Observation" O
     where O.status in { 'final', 'amended', 'corrected' }
-      and O.value ~ Concepts."Men who have sex with men"
-/* End of Men who have sex with men */
+      and O.value ~ Concepts."Men who have sex with men - HIV.B.DE52"
+/* End of Men who have sex with men B.DE52 */
 
 /*
 @dataElement: HIV.B.DE53 - Trans and gender-diverse people
@@ -608,16 +608,16 @@ define "People who inject drugs B.DE54 Observation":
 @description: Client lives in a prison or another closed setting
 */
 // TODO: Replace placeholder with relevant CQL logic
-define "People living in prisons and other closed settings":
-  exists "People living in prisons and other closed settings Condition"
-    or exists "People living in prisons and other closed settings Observation"
-define "People living in prisons and other closed settings Condition":
-  [Condition: Concepts."People living in prisons and other closed settings"]
-define "People living in prisons and other closed settings Observation":
+define "People living in prisons and other closed settings B.DE55":
+  exists "People living in prisons and other closed settings B.DE55 Condition"
+    or exists "People living in prisons and other closed settings B.DE55 Observation"
+define "People living in prisons and other closed settings B.DE55 Condition":
+  [Condition: Concepts."People living in prisons and other closed settings - HIV.B.DE55"]
+define "People living in prisons and other closed settings B.DE55 Observation":
   "Key population member type B.DE50 Observation" O
     where O.status in { 'final', 'amended', 'corrected' }
-      and O.value ~ Concepts."People living in prisons and other closed settings"
-/* End of People living in prisons and other closed settings */
+      and O.value ~ Concepts."People living in prisons and other closed settings - HIV.B.DE55"
+/* End of People living in prisons and other closed settings B.DE55 */
 
 /*
 @dataElement: HIV.B.DE60 - Date HIV test results returned
@@ -1272,16 +1272,16 @@ define "HIV-negative B.DE113 Observation":
 @description: Test result is HIV-inconclusive
 */
 // TODO: Replace placeholder with relevant CQL logic
-define "HIV-inconclusive":
-  exists "HIV-inconclusive Condition"
-    or exists "HIV-inconclusive Observation"
-define "HIV-inconclusive Condition":
-  [Condition: Concepts."HIV-inconclusive"]
-define "HIV-inconclusive Observation":
+define "HIV-inconclusive B.DE114":
+  exists "HIV-inconclusive B.DE114 Condition"
+    or exists "HIV-inconclusive B.DE114 Observation"
+define "HIV-inconclusive B.DE114 Condition":
+  [Condition: Concepts."HIV-inconclusive - HIV.B.DE114"]
+define "HIV-inconclusive B.DE114 Observation":
   "HIV test result B.DE111 Observation" O
     where O.status in { 'final', 'amended', 'corrected' }
-      and O.value ~ Concepts."HIV-inconclusive"
-/* End of HIV-inconclusive */
+      and O.value ~ Concepts."HIV-inconclusive - HIV.B.DE114"
+/* End of HIV-inconclusive B.DE114 */
 
 /*
 @dataElement: HIV.B.DE115 - HIV status
@@ -1529,16 +1529,16 @@ define "HIV-positive counselling conducted Observation":
 @description: Whether counselling was provided to a client who has been diagnosed with hepatitis B
 */
 // TODO: Replace placeholder with relevant CQL logic
-define "Hepatitis B positive counselling conducted":
-  exists "Hepatitis B positive counselling conducted Condition"
-    or exists "Hepatitis B positive counselling conducted Observation"
-define "Hepatitis B positive counselling conducted Condition":
-  [Condition: Concepts."Hepatitis B positive counselling conducted"]
-define "Hepatitis B positive counselling conducted Observation":
+define "Hepatitis B positive counselling conducted B.DE144":
+  exists "Hepatitis B positive counselling conducted B.DE144 Condition"
+    or exists "Hepatitis B positive counselling conducted B.DE144 Observation"
+define "Hepatitis B positive counselling conducted B.DE144 Condition":
+  [Condition: Concepts."Hepatitis B positive counselling conducted - HIV.B.DE144"]
+define "Hepatitis B positive counselling conducted B.DE144 Observation":
   "Counselling provided Observation" O
     where O.status in { 'final', 'amended', 'corrected' }
-      and O.value ~ Concepts."Hepatitis B positive counselling conducted"
-/* End of Hepatitis B positive counselling conducted */
+      and O.value ~ Concepts."Hepatitis B positive counselling conducted - HIV.B.DE144"
+/* End of Hepatitis B positive counselling conducted B.DE144 */
 
 /*
 @dataElement: HIV.B.DE145 - Hepatitis C positive counselling conducted
@@ -1546,16 +1546,16 @@ define "Hepatitis B positive counselling conducted Observation":
 @description: Whether counselling was provided to a client who has been diagnosed with hepatitis C
 */
 // TODO: Replace placeholder with relevant CQL logic
-define "Hepatitis C positive counselling conducted":
-  exists "Hepatitis C positive counselling conducted Condition"
-    or exists "Hepatitis C positive counselling conducted Observation"
-define "Hepatitis C positive counselling conducted Condition":
-  [Condition: Concepts."Hepatitis C positive counselling conducted"]
-define "Hepatitis C positive counselling conducted Observation":
+define "Hepatitis C positive counselling conducted B.DE145":
+  exists "Hepatitis C positive counselling conducted B.DE145 Condition"
+    or exists "Hepatitis C positive counselling conducted B.DE145 Observation"
+define "Hepatitis C positive counselling conducted B.DE145 Condition":
+  [Condition: Concepts."Hepatitis C positive counselling conducted - HIV.B.DE145"]
+define "Hepatitis C positive counselling conducted B.DE145 Observation":
   "Counselling provided Observation" O
     where O.status in { 'final', 'amended', 'corrected' }
-      and O.value ~ Concepts."Hepatitis C positive counselling conducted"
-/* End of Hepatitis C positive counselling conducted */
+      and O.value ~ Concepts."Hepatitis C positive counselling conducted - HIV.B.DE145"
+/* End of Hepatitis C positive counselling conducted B.DE145 */
 
 /*
 @dataElement: HIV.B.DE146 - Syphilis counselling, treatment and further testing
@@ -1563,16 +1563,16 @@ define "Hepatitis C positive counselling conducted Observation":
 @description: Whether counselling and treatment was provided to a client who has been diagnosed with syphilis. Additional testing (RPR test) recommended.
 */
 // TODO: Replace placeholder with relevant CQL logic
-define "Syphilis counselling, treatment and further testing":
-  exists "Syphilis counselling, treatment and further testing Condition"
-    or exists "Syphilis counselling, treatment and further testing Observation"
-define "Syphilis counselling, treatment and further testing Condition":
-  [Condition: Concepts."Syphilis counselling, treatment and further testing"]
-define "Syphilis counselling, treatment and further testing Observation":
+define "Syphilis counselling, treatment and further testing B.DE146":
+  exists "Syphilis counselling, treatment and further testing B.DE146 Condition"
+    or exists "Syphilis counselling, treatment and further testing B.DE146 Observation"
+define "Syphilis counselling, treatment and further testing B.DE146 Condition":
+  [Condition: Concepts."Syphilis counselling, treatment and further testing - HIV.B.DE146"]
+define "Syphilis counselling, treatment and further testing B.DE146 Observation":
   "Counselling provided Observation" O
     where O.status in { 'final', 'amended', 'corrected' }
-      and O.value ~ Concepts."Syphilis counselling, treatment and further testing"
-/* End of Syphilis counselling, treatment and further testing */
+      and O.value ~ Concepts."Syphilis counselling, treatment and further testing - HIV.B.DE146"
+/* End of Syphilis counselling, treatment and further testing B.DE146 */
 
 /*
 @dataElement: HIV.B.DE147 - Linked to enrolment in care and ART initiation
@@ -1580,16 +1580,16 @@ define "Syphilis counselling, treatment and further testing Observation":
 @description: Linkage made from HIV testing to enrolment in care following an HIV diagnosis
 */
 // TODO: Replace placeholder with relevant CQL logic
-define "Linked to enrolment in care and ART initiation":
-  exists "Linked to enrolment in care and ART initiation Condition"
-    or exists "Linked to enrolment in care and ART initiation Observation"
-define "Linked to enrolment in care and ART initiation Condition":
-  [Condition: Concepts."Linked to enrolment in care and ART initiation"]
-define "Linked to enrolment in care and ART initiation Observation":
+define "Linked to enrolment in care and ART initiation B.DE147":
+  exists "Linked to enrolment in care and ART initiation B.DE147 Condition"
+    or exists "Linked to enrolment in care and ART initiation B.DE147 Observation"
+define "Linked to enrolment in care and ART initiation B.DE147 Condition":
+  [Condition: Concepts."Linked to enrolment in care and ART initiation - HIV.B.DE147"]
+define "Linked to enrolment in care and ART initiation B.DE147 Observation":
   "Counselling provided Observation" O
     where O.status in { 'final', 'amended', 'corrected' }
-      and O.value ~ Concepts."Linked to enrolment in care and ART initiation"
-/* End of Linked to enrolment in care and ART initiation */
+      and O.value ~ Concepts."Linked to enrolment in care and ART initiation - HIV.B.DE147"
+/* End of Linked to enrolment in care and ART initiation B.DE147 */
 
 /*
 @dataElement: HIV.B.DE148 - VMMC counselling provided
@@ -5249,16 +5249,16 @@ define "Unconsciousness Observation":
 @description: Client is convulsing
 */
 // TODO: Replace placeholder with relevant CQL logic
-define "Convulsions":
-  exists "Convulsions Condition"
-    or exists "Convulsions Observation"
-define "Convulsions Condition":
-  [Condition: Concepts."Convulsions"]
-define "Convulsions Observation":
+define "Convulsions D.DE24":
+  exists "Convulsions D.DE24 Condition"
+    or exists "Convulsions D.DE24 Observation"
+define "Convulsions D.DE24 Condition":
+  [Condition: Concepts."Convulsions - HIV.D.DE24"]
+define "Convulsions D.DE24 Observation":
   "Signs of serious illness Observation" O
     where O.status in { 'final', 'amended', 'corrected' }
-      and O.value ~ Concepts."Convulsions"
-/* End of Convulsions */
+      and O.value ~ Concepts."Convulsions - HIV.D.DE24"
+/* End of Convulsions D.DE24 */
 
 /*
 @dataElement: HIV.D.DE25 - Unable to drink
@@ -6737,16 +6737,16 @@ define "Clinical failure Observation":
 @description: CD4 count at or below 250 cells/mm3 following clinical failure
 */
 // TODO: Replace placeholder with relevant CQL logic
-define "Immunological failure":
-  exists "Immunological failure Condition"
-    or exists "Immunological failure Observation"
-define "Immunological failure Condition":
-  [Condition: Concepts."Immunological failure"]
-define "Immunological failure Observation":
+define "Immunological failure D.DE227":
+  exists "Immunological failure D.DE227 Condition"
+    or exists "Immunological failure D.DE227 Observation"
+define "Immunological failure D.DE227 Condition":
+  [Condition: Concepts."Immunological failure - HIV.D.DE227"]
+define "Immunological failure D.DE227 Observation":
   "Treatment failure Observation" O
     where O.status in { 'final', 'amended', 'corrected' }
-      and O.value ~ Concepts."Immunological failure"
-/* End of Immunological failure */
+      and O.value ~ Concepts."Immunological failure - HIV.D.DE227"
+/* End of Immunological failure D.DE227 */
 
 /*
 @dataElement: HIV.D.DE228 - Virological failure
@@ -6754,16 +6754,16 @@ define "Immunological failure Observation":
 @description: The inability to achieve or maintain viral suppression below a certain threshold indicated by viral load above 1000 copies/mL based on two consecutive viral load measurements in 3 months, with adherence support following the first viral load test
 */
 // TODO: Replace placeholder with relevant CQL logic
-define "Virological failure":
-  exists "Virological failure Condition"
-    or exists "Virological failure Observation"
-define "Virological failure Condition":
-  [Condition: Concepts."Virological failure"]
-define "Virological failure Observation":
+define "Virological failure D.DE228":
+  exists "Virological failure D.DE228 Condition"
+    or exists "Virological failure D.DE228 Observation"
+define "Virological failure D.DE228 Condition":
+  [Condition: Concepts."Virological failure - HIV.D.DE228"]
+define "Virological failure D.DE228 Observation":
   "Treatment failure Observation" O
     where O.status in { 'final', 'amended', 'corrected' }
-      and O.value ~ Concepts."Virological failure"
-/* End of Virological failure */
+      and O.value ~ Concepts."Virological failure - HIV.D.DE228"
+/* End of Virological failure D.DE228 */
 
 /*
 @dataElement: HIV.D.DE259 - Risk factors, comorbidities and coinfections signs and symptoms
@@ -8218,16 +8218,16 @@ define "Pregnancy test Observation":
 @description: Provider ordered a syphilis test
 */
 // TODO: Replace placeholder with relevant CQL logic
-define "Syphilis test":
-  exists "Syphilis test Condition"
-    or exists "Syphilis test Observation"
-define "Syphilis test Condition":
-  [Condition: Concepts."Syphilis test"]
-define "Syphilis test Observation":
+define "Syphilis test D.DE402":
+  exists "Syphilis test D.DE402 Condition"
+    or exists "Syphilis test D.DE402 Observation"
+define "Syphilis test D.DE402 Condition":
+  [Condition: Concepts."Syphilis test - HIV.D.DE402"]
+define "Syphilis test D.DE402 Observation":
   "Monitoring examinations Observation" O
     where O.status in { 'final', 'amended', 'corrected' }
-      and O.value ~ Concepts."Syphilis test"
-/* End of Syphilis test */
+      and O.value ~ Concepts."Syphilis test - HIV.D.DE402"
+/* End of Syphilis test D.DE402 */
 
 /*
 @dataElement: HIV.D.DE403 - Chest X-ray CXR
@@ -9612,16 +9612,16 @@ define "HPV-DNA Observation":
 @description: Screened for cervical cancer using visual inspection with acetic acid (VIA)
 */
 // TODO: Replace placeholder with relevant CQL logic
-define "VIA":
-  exists "VIA Condition"
-    or exists "VIA Observation"
-define "VIA Condition":
-  [Condition: Concepts."VIA"]
-define "VIA Observation":
+define "VIA D.DE660":
+  exists "VIA D.DE660 Condition"
+    or exists "VIA D.DE660 Observation"
+define "VIA D.DE660 Condition":
+  [Condition: Concepts."VIA - HIV.D.DE660"]
+define "VIA D.DE660 Observation":
   "Cervical cancer primary screening test type Observation" O
     where O.status in { 'final', 'amended', 'corrected' }
-      and O.value ~ Concepts."VIA"
-/* End of VIA */
+      and O.value ~ Concepts."VIA - HIV.D.DE660"
+/* End of VIA D.DE660 */
 
 /*
 @dataElement: HIV.D.DE661 - Cervical cytology
@@ -9629,16 +9629,16 @@ define "VIA Observation":
 @description: Screened for cervical cancer using cervical cytology
 */
 // TODO: Replace placeholder with relevant CQL logic
-define "Cervical cytology":
-  exists "Cervical cytology Condition"
-    or exists "Cervical cytology Observation"
-define "Cervical cytology Condition":
-  [Condition: Concepts."Cervical cytology"]
-define "Cervical cytology Observation":
+define "Cervical cytology D.DE661":
+  exists "Cervical cytology D.DE661 Condition"
+    or exists "Cervical cytology D.DE661 Observation"
+define "Cervical cytology D.DE661 Condition":
+  [Condition: Concepts."Cervical cytology - HIV.D.DE661"]
+define "Cervical cytology D.DE661 Observation":
   "Cervical cancer primary screening test type Observation" O
     where O.status in { 'final', 'amended', 'corrected' }
-      and O.value ~ Concepts."Cervical cytology"
-/* End of Cervical cytology */
+      and O.value ~ Concepts."Cervical cytology - HIV.D.DE661"
+/* End of Cervical cytology D.DE661 */
 
 /*
 @dataElement: HIV.D.DE662 - Other
@@ -9754,16 +9754,16 @@ define "Cervical precancer lesions Observation":
 @description: Client is diagnosed with invasive cervical cancer disease
 */
 // TODO: Replace placeholder with relevant CQL logic
-define "Invasive cervical cancer":
-  exists "Invasive cervical cancer Condition"
-    or exists "Invasive cervical cancer Observation"
-define "Invasive cervical cancer Condition":
-  [Condition: Concepts."Invasive cervical cancer"]
-define "Invasive cervical cancer Observation":
+define "Invasive cervical cancer D.DE711":
+  exists "Invasive cervical cancer D.DE711 Condition"
+    or exists "Invasive cervical cancer D.DE711 Observation"
+define "Invasive cervical cancer D.DE711 Condition":
+  [Condition: Concepts."Invasive cervical cancer - HIV.D.DE711"]
+define "Invasive cervical cancer D.DE711 Observation":
   "Cervical cancer diagnosis Observation" O
     where O.status in { 'final', 'amended', 'corrected' }
-      and O.value ~ Concepts."Invasive cervical cancer"
-/* End of Invasive cervical cancer */
+      and O.value ~ Concepts."Invasive cervical cancer - HIV.D.DE711"
+/* End of Invasive cervical cancer D.DE711 */
 
 /*
 @dataElement: HIV.D.DE712 - Cervical cancer stage at diagnosis
@@ -10902,16 +10902,16 @@ define "Medication/drug Observation":
 @description: Rifampicin currently being taken by, or considered for, client
 */
 // TODO: Replace placeholder with relevant CQL logic
-define "Rifampicin":
-  exists "Rifampicin Condition"
-    or exists "Rifampicin Observation"
-define "Rifampicin Condition":
-  [Condition: Concepts."Rifampicin"]
-define "Rifampicin Observation":
+define "Rifampicin D.DE904":
+  exists "Rifampicin D.DE904 Condition"
+    or exists "Rifampicin D.DE904 Observation"
+define "Rifampicin D.DE904 Condition":
+  [Condition: Concepts."Rifampicin - HIV.D.DE904"]
+define "Rifampicin D.DE904 Observation":
   "Medication/drug Observation" O
     where O.status in { 'final', 'amended', 'corrected' }
-      and O.value ~ Concepts."Rifampicin"
-/* End of Rifampicin */
+      and O.value ~ Concepts."Rifampicin - HIV.D.DE904"
+/* End of Rifampicin D.DE904 */
 
 /*
 @dataElement: HIV.D.DE905 - Halofantrine
@@ -11469,16 +11469,16 @@ define "TB diagnosis result Observation":
 @description: Client is diagnosed with TB disease
 */
 // TODO: Replace placeholder with relevant CQL logic
-define "Diagnosed TB":
-  exists "Diagnosed TB Condition"
-    or exists "Diagnosed TB Observation"
-define "Diagnosed TB Condition":
-  [Condition: Concepts."Diagnosed TB"]
-define "Diagnosed TB Observation":
+define "Diagnosed TB D.DE940":
+  exists "Diagnosed TB D.DE940 Condition"
+    or exists "Diagnosed TB D.DE940 Observation"
+define "Diagnosed TB D.DE940 Condition":
+  [Condition: Concepts."Diagnosed TB - HIV.D.DE940"]
+define "Diagnosed TB D.DE940 Observation":
   "TB diagnosis result Observation" O
     where O.status in { 'final', 'amended', 'corrected' }
-      and O.value ~ Concepts."Diagnosed TB"
-/* End of Diagnosed TB */
+      and O.value ~ Concepts."Diagnosed TB - HIV.D.DE940"
+/* End of Diagnosed TB D.DE940 */
 
 /*
 @dataElement: HIV.D.DE941 - TB excluded
@@ -11877,16 +11877,16 @@ define "Weight loss reported Observation":
 @description: Client reports experiencing night sweats
 */
 // TODO: Replace placeholder with relevant CQL logic
-define "Night sweats":
-  exists "Night sweats Condition"
-    or exists "Night sweats Observation"
-define "Night sweats Condition":
-  [Condition: Concepts."Night sweats"]
-define "Night sweats Observation":
+define "Night sweats D.DE978":
+  exists "Night sweats D.DE978 Condition"
+    or exists "Night sweats D.DE978 Observation"
+define "Night sweats D.DE978 Condition":
+  [Condition: Concepts."Night sweats - HIV.D.DE978"]
+define "Night sweats D.DE978 Observation":
   "Symptoms of TB Observation" O
     where O.status in { 'final', 'amended', 'corrected' }
-      and O.value ~ Concepts."Night sweats"
-/* End of Night sweats */
+      and O.value ~ Concepts."Night sweats - HIV.D.DE978"
+/* End of Night sweats D.DE978 */
 
 /*
 @dataElement: HIV.D.DE979 - Poor weight gain
@@ -11979,16 +11979,16 @@ define "Lethargy D.DE983 Observation":
 @description: No symptoms of TB identified
 */
 // TODO: Replace placeholder with relevant CQL logic
-define "None":
-  exists "None Condition"
-    or exists "None Observation"
-define "None Condition":
-  [Condition: Concepts."None"]
-define "None Observation":
+define "None D.DE984":
+  exists "None D.DE984 Condition"
+    or exists "None D.DE984 Observation"
+define "None D.DE984 Condition":
+  [Condition: Concepts."None - HIV.D.DE984"]
+define "None D.DE984 Observation":
   "Symptoms of TB Observation" O
     where O.status in { 'final', 'amended', 'corrected' }
-      and O.value ~ Concepts."None"
-/* End of None */
+      and O.value ~ Concepts."None - HIV.D.DE984"
+/* End of None D.DE984 */
 
 /*
 @dataElement: HIV.D.DE985 - History of contact with a person with TB
@@ -12401,16 +12401,16 @@ define "On TPT with interruptions Observation":
 @description: The health care worker has temporarily stopped the TB preventive treatment (TPT), but TPT is expected to continue again later. May also be called 'suspended'.
 */
 // TODO: Replace placeholder with relevant CQL logic
-define "On hold":
-  exists "On hold Condition"
-    or exists "On hold Observation"
-define "On hold Condition":
-  [Condition: Concepts."On hold"]
-define "On hold Observation":
+define "On hold D.DE1038":
+  exists "On hold D.DE1038 Condition"
+    or exists "On hold D.DE1038 Observation"
+define "On hold D.DE1038 Condition":
+  [Condition: Concepts."On hold - HIV.D.DE1038"]
+define "On hold D.DE1038 Observation":
   "TB preventive treatment TPT status Observation" O
     where O.status in { 'final', 'amended', 'corrected' }
-      and O.value ~ Concepts."On hold"
-/* End of On hold */
+      and O.value ~ Concepts."On hold - HIV.D.DE1038"
+/* End of On hold D.DE1038 */
 
 /*
 @dataElement: HIV.D.DE1039 - Completed
@@ -12418,16 +12418,16 @@ define "On hold Observation":
 @description: TB preventive treatment (TPT) was completed
 */
 // TODO: Replace placeholder with relevant CQL logic
-define "Completed":
-  exists "Completed Condition"
-    or exists "Completed Observation"
-define "Completed Condition":
-  [Condition: Concepts."Completed"]
-define "Completed Observation":
+define "Completed D.DE1039":
+  exists "Completed D.DE1039 Condition"
+    or exists "Completed D.DE1039 Observation"
+define "Completed D.DE1039 Condition":
+  [Condition: Concepts."Completed - HIV.D.DE1039"]
+define "Completed D.DE1039 Observation":
   "TB preventive treatment TPT status Observation" O
     where O.status in { 'final', 'amended', 'corrected' }
-      and O.value ~ Concepts."Completed"
-/* End of Completed */
+      and O.value ~ Concepts."Completed - HIV.D.DE1039"
+/* End of Completed D.DE1039 */
 
 /*
 @dataElement: HIV.E.DE41 - Timing of ART initiation
@@ -14270,16 +14270,16 @@ define "HIV treatment outcome Observation":
 @description: Twenty-eight days or more since last missed appointment 
 */
 // TODO: Replace placeholder with relevant CQL logic
-define "Lost to follow-up":
-  exists "Lost to follow-up Condition"
-    or exists "Lost to follow-up Observation"
-define "Lost to follow-up Condition":
-  [Condition: Concepts."Lost to follow-up"]
-define "Lost to follow-up Observation":
+define "Lost to follow-up H.DE42":
+  exists "Lost to follow-up H.DE42 Condition"
+    or exists "Lost to follow-up H.DE42 Observation"
+define "Lost to follow-up H.DE42 Condition":
+  [Condition: Concepts."Lost to follow-up - HIV.H.DE42"]
+define "Lost to follow-up H.DE42 Observation":
   "HIV treatment outcome Observation" O
     where O.status in { 'final', 'amended', 'corrected' }
-      and O.value ~ Concepts."Lost to follow-up"
-/* End of Lost to follow-up */
+      and O.value ~ Concepts."Lost to follow-up - HIV.H.DE42"
+/* End of Lost to follow-up H.DE42 */
 
 /*
 @dataElement: HIV.H.DE43 - Transferred out
@@ -14287,16 +14287,16 @@ define "Lost to follow-up Observation":
 @description: The client transferred to another facility
 */
 // TODO: Replace placeholder with relevant CQL logic
-define "Transferred out":
-  exists "Transferred out Condition"
-    or exists "Transferred out Observation"
-define "Transferred out Condition":
-  [Condition: Concepts."Transferred out"]
-define "Transferred out Observation":
+define "Transferred out H.DE43":
+  exists "Transferred out H.DE43 Condition"
+    or exists "Transferred out H.DE43 Observation"
+define "Transferred out H.DE43 Condition":
+  [Condition: Concepts."Transferred out - HIV.H.DE43"]
+define "Transferred out H.DE43 Observation":
   "HIV treatment outcome Observation" O
     where O.status in { 'final', 'amended', 'corrected' }
-      and O.value ~ Concepts."Transferred out"
-/* End of Transferred out */
+      and O.value ~ Concepts."Transferred out - HIV.H.DE43"
+/* End of Transferred out H.DE43 */
 
 /*
 @dataElement: HIV.H.DE44 - Death documented
@@ -14304,16 +14304,16 @@ define "Transferred out Observation":
 @description: People living with HIV previously on ART who are confirmed to have died from any cause
 */
 // TODO: Replace placeholder with relevant CQL logic
-define "Death documented":
-  exists "Death documented Condition"
-    or exists "Death documented Observation"
-define "Death documented Condition":
-  [Condition: Concepts."Death documented"]
-define "Death documented Observation":
+define "Death documented H.DE44":
+  exists "Death documented H.DE44 Condition"
+    or exists "Death documented H.DE44 Observation"
+define "Death documented H.DE44 Condition":
+  [Condition: Concepts."Death documented - HIV.H.DE44"]
+define "Death documented H.DE44 Observation":
   "HIV treatment outcome Observation" O
     where O.status in { 'final', 'amended', 'corrected' }
-      and O.value ~ Concepts."Death documented"
-/* End of Death documented */
+      and O.value ~ Concepts."Death documented - HIV.H.DE44"
+/* End of Death documented H.DE44 */
 
 /*
 @dataElement: HIV.H.DE45 - Refused stopped treatment
@@ -14321,16 +14321,16 @@ define "Death documented Observation":
 @description: Client was contacted and confirmed to have stopped ART (reasons may include stigma and discrimination, faith healing, etc.)
 */
 // TODO: Replace placeholder with relevant CQL logic
-define "Refused stopped treatment":
-  exists "Refused stopped treatment Condition"
-    or exists "Refused stopped treatment Observation"
-define "Refused stopped treatment Condition":
-  [Condition: Concepts."Refused stopped treatment"]
-define "Refused stopped treatment Observation":
+define "Refused stopped treatment H.DE45":
+  exists "Refused stopped treatment H.DE45 Condition"
+    or exists "Refused stopped treatment H.DE45 Observation"
+define "Refused stopped treatment H.DE45 Condition":
+  [Condition: Concepts."Refused stopped treatment - HIV.H.DE45"]
+define "Refused stopped treatment H.DE45 Observation":
   "HIV treatment outcome Observation" O
     where O.status in { 'final', 'amended', 'corrected' }
-      and O.value ~ Concepts."Refused stopped treatment"
-/* End of Refused stopped treatment */
+      and O.value ~ Concepts."Refused stopped treatment - HIV.H.DE45"
+/* End of Refused stopped treatment H.DE45 */
 
 /*
 @dataElement: HIV.H.DE47 - On ART
