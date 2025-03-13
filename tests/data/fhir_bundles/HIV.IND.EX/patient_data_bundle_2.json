@@ -1,0 +1,40 @@
+{
+  "resourceType": "Bundle",
+  "type": "transaction",
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "id": "19bfe9af-1141-4c7a-b976-b2ae4e5c0748",
+        "meta": {
+          "profile": [
+            "http://smart.who.int/hiv/StructureDefinition/HivPatient"
+          ]
+        },
+        "active": true,
+        "gender": "female",
+        "birthDate": "1990-01-02",
+        "address": [
+          {
+            "text": "Sample Address",
+            "country": "US"
+          }
+        ],
+        "identifier": [
+          {
+            "value": 1
+          },
+          {
+            "value": 2
+          }
+        ],
+        "text": "Does not have associated condition"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/19bfe9af-1141-4c7a-b976-b2ae4e5c0748"
+      }
+    }
+  ],
+  "id": "bdc14b59-0323-461d-af47-f65b4b77c75c"
+}

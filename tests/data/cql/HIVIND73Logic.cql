@@ -97,6 +97,13 @@
  * Suggested Scoring Method: proportion | http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/proportion-measure-cqfm
  */
 
+  /*
+  * Profiles:
+  * - HivGonorrhoeaTest
+  * - HivStatusObservation
+  * - HivStatusCondition
+  */ 
+
 library HIVIND73Logic
 
 // Included Libraries
@@ -106,6 +113,9 @@ include HIVCommon version '0.0.1' called HIC
 include FHIRHelpers version '4.0.1'
 
 include WHOCommon called WCom
+include HIVElements called HE
+include HIVIndicatorElements called HIE
+include HIVConfig called Config
 
 // Indicator Definition
 parameter "Measurement Period" Interval<Date> default Interval[@2023-01-01, @2023-01-30]
@@ -128,8 +138,8 @@ define "Initial Population":
  */
 
 define "Numerator":
-  true
-
+  HIE."Has HIV-positive Status" and
+  HIE."Positive B.DE257"
 
 /**
  * Denominator
@@ -139,8 +149,38 @@ define "Numerator":
  */
 
 define "Denominator":
-  true
+  HIE."Has HIV-positive Status" and
+  exists(HIE."Gonorrhoea test result B.DE256")
     
 
 /* end Populations */
 
+/*
+ * Disaggregators
+ */
+
+define "Administrative Gender Stratifier":
+	HIE."By Administrative Gender Stratifier"
+
+define "Age Stratifier":
+	HIE."By Age Stratifier 9"
+
+define "Geographic Region Stratifier":
+	HIE."By Geographic Region Stratifier"
+
+define "patientGroups Stratifier":
+	HIE."patientGroups"
+
+define "Neisseria gonorrhoeae test type B.DE276":
+  HIE."Neisseria gonorrhoeae test type B.DE276"
+
+define "Type of specimen B.DE261":
+  HIE."Type of specimen B.DE261"
+
+define "Stratification":
+ HIE."By Administrative Gender Stratifier".code 
+  + ':' + HIE."By Age Stratifier 9"
++ ':' + HIE."By Geographic Region Stratifier"
++ Combine(HIE.patientGroups, ':')
++ ':' + HIE."Neisseria gonorrhoeae test type B.DE276".code
++ ':' + HIE."Type of specimen B.DE261".code 

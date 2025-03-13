@@ -18,6 +18,7 @@ inflect = "^7.3.0"
 python-slugify = ">=8.0.4"
 stringcase = ">=1.2"
 jinja2 = "^3.1.4"
+beautifulsoup4 = "^4.13.3"
 
 [tool.poetry.group.dev.dependencies]
 pytest = ">=6"

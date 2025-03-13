@@ -72,17 +72,17 @@ define "Gender Observation":
 @description: Client identifies as female
 */
 // TODO: Replace placeholder with relevant CQL logic
-define "Female":
-  exists "Female Condition"
-    or exists "Female Observation"
-define "Female Condition":
-  Elements."Female Condition" C
+define "Female A.DE19":
+  exists "Female A.DE19 Condition"
+    or exists "Female A.DE19 Observation"
+define "Female A.DE19 Condition":
+  Elements."Female A.DE19 Condition" C
     where C.prevalenceInterval() overlaps before "Measurement Period"
       or C.prevalenceInterval() overlaps after "Measurement Period"
-define "Female Observation":
-  Elements."Female Observation" O
+define "Female A.DE19 Observation":
+  Elements."Female A.DE19 Observation" O
     where O.effective.toInterval() during "Measurement Period"
-/* End of Female */
+/* End of Female A.DE19 */
 
 /*
 @dataElement: HIV.A.DE20 - Male
@@ -90,17 +90,17 @@ define "Female Observation":
 @description: Client identifies as male
 */
 // TODO: Replace placeholder with relevant CQL logic
-define "Male":
-  exists "Male Condition"
-    or exists "Male Observation"
-define "Male Condition":
-  Elements."Male Condition" C
+define "Male A.DE20":
+  exists "Male A.DE20 Condition"
+    or exists "Male A.DE20 Observation"
+define "Male A.DE20 Condition":
+  Elements."Male A.DE20 Condition" C
     where C.prevalenceInterval() overlaps before "Measurement Period"
       or C.prevalenceInterval() overlaps after "Measurement Period"
-define "Male Observation":
-  Elements."Male Observation" O
+define "Male A.DE20 Observation":
+  Elements."Male A.DE20 Observation" O
     where O.effective.toInterval() during "Measurement Period"
-/* End of Male */
+/* End of Male A.DE20 */
 
 /*
 @dataElement: HIV.A.DE21 - Transgender male
@@ -224,17 +224,17 @@ define "Type of contact or partner for partner services Observation":
 @description: Client is the biological child of the person that referred the client for family services
 */
 // TODO: Replace placeholder with relevant CQL logic
-define "Biological child":
-  exists "Biological child Condition"
-    or exists "Biological child Observation"
-define "Biological child Condition":
-  Elements."Biological child Condition" C
+define "Biological child B.DE9":
+  exists "Biological child B.DE9 Condition"
+    or exists "Biological child B.DE9 Observation"
+define "Biological child B.DE9 Condition":
+  Elements."Biological child B.DE9 Condition" C
     where C.prevalenceInterval() overlaps before "Measurement Period"
       or C.prevalenceInterval() overlaps after "Measurement Period"
-define "Biological child Observation":
-  Elements."Biological child Observation" O
+define "Biological child B.DE9 Observation":
+  Elements."Biological child B.DE9 Observation" O
     where O.effective.toInterval() during "Measurement Period"
-/* End of Biological child */
+/* End of Biological child B.DE9 */
 
 /*
 @dataElement: HIV.B.DE10 - Drug-injecting partner
@@ -469,17 +469,17 @@ define "Sex worker B.DE51 Observation":
 @description: Client is a man who has sex with men
 */
 // TODO: Replace placeholder with relevant CQL logic
-define "Men who have sex with men":
-  exists "Men who have sex with men Condition"
-    or exists "Men who have sex with men Observation"
-define "Men who have sex with men Condition":
-  Elements."Men who have sex with men Condition" C
+define "Men who have sex with men B.DE52":
+  exists "Men who have sex with men B.DE52 Condition"
+    or exists "Men who have sex with men B.DE52 Observation"
+define "Men who have sex with men B.DE52 Condition":
+  Elements."Men who have sex with men B.DE52 Condition" C
     where C.prevalenceInterval() overlaps before "Measurement Period"
       or C.prevalenceInterval() overlaps after "Measurement Period"
-define "Men who have sex with men Observation":
-  Elements."Men who have sex with men Observation" O
+define "Men who have sex with men B.DE52 Observation":
+  Elements."Men who have sex with men B.DE52 Observation" O
     where O.effective.toInterval() during "Measurement Period"
-/* End of Men who have sex with men */
+/* End of Men who have sex with men B.DE52 */
 
 /*
 @dataElement: HIV.B.DE53 - Trans and gender-diverse people
@@ -523,17 +523,17 @@ define "People who inject drugs B.DE54 Observation":
 @description: Client lives in a prison or another closed setting
 */
 // TODO: Replace placeholder with relevant CQL logic
-define "People living in prisons and other closed settings":
-  exists "People living in prisons and other closed settings Condition"
-    or exists "People living in prisons and other closed settings Observation"
-define "People living in prisons and other closed settings Condition":
-  Elements."People living in prisons and other closed settings Condition" C
+define "People living in prisons and other closed settings B.DE55":
+  exists "People living in prisons and other closed settings B.DE55 Condition"
+    or exists "People living in prisons and other closed settings B.DE55 Observation"
+define "People living in prisons and other closed settings B.DE55 Condition":
+  Elements."People living in prisons and other closed settings B.DE55 Condition" C
     where C.prevalenceInterval() overlaps before "Measurement Period"
       or C.prevalenceInterval() overlaps after "Measurement Period"
-define "People living in prisons and other closed settings Observation":
-  Elements."People living in prisons and other closed settings Observation" O
+define "People living in prisons and other closed settings B.DE55 Observation":
+  Elements."People living in prisons and other closed settings B.DE55 Observation" O
     where O.effective.toInterval() during "Measurement Period"
-/* End of People living in prisons and other closed settings */
+/* End of People living in prisons and other closed settings B.DE55 */
 
 /*
 @dataElement: HIV.B.DE60 - Date HIV test results returned
@@ -830,17 +830,17 @@ define "HIV-negative B.DE113 Observation":
 @description: Test result is HIV-inconclusive
 */
 // TODO: Replace placeholder with relevant CQL logic
-define "HIV-inconclusive":
-  exists "HIV-inconclusive Condition"
-    or exists "HIV-inconclusive Observation"
-define "HIV-inconclusive Condition":
-  Elements."HIV-inconclusive Condition" C
+define "HIV-inconclusive B.DE114":
+  exists "HIV-inconclusive B.DE114 Condition"
+    or exists "HIV-inconclusive B.DE114 Observation"
+define "HIV-inconclusive B.DE114 Condition":
+  Elements."HIV-inconclusive B.DE114 Condition" C
     where C.prevalenceInterval() overlaps before "Measurement Period"
       or C.prevalenceInterval() overlaps after "Measurement Period"
-define "HIV-inconclusive Observation":
-  Elements."HIV-inconclusive Observation" O
+define "HIV-inconclusive B.DE114 Observation":
+  Elements."HIV-inconclusive B.DE114 Observation" O
     where O.effective.toInterval() during "Measurement Period"
-/* End of HIV-inconclusive */
+/* End of HIV-inconclusive B.DE114 */
 
 /*
 @dataElement: HIV.B.DE115 - HIV status
@@ -3972,17 +3972,17 @@ define "Cervical precancer lesions Observation":
 @description: Client is diagnosed with invasive cervical cancer disease
 */
 // TODO: Replace placeholder with relevant CQL logic
-define "Invasive cervical cancer":
-  exists "Invasive cervical cancer Condition"
-    or exists "Invasive cervical cancer Observation"
-define "Invasive cervical cancer Condition":
-  Elements."Invasive cervical cancer Condition" C
+define "Invasive cervical cancer D.DE711":
+  exists "Invasive cervical cancer D.DE711 Condition"
+    or exists "Invasive cervical cancer D.DE711 Observation"
+define "Invasive cervical cancer D.DE711 Condition":
+  Elements."Invasive cervical cancer D.DE711 Condition" C
     where C.prevalenceInterval() overlaps before "Measurement Period"
       or C.prevalenceInterval() overlaps after "Measurement Period"
-define "Invasive cervical cancer Observation":
-  Elements."Invasive cervical cancer Observation" O
+define "Invasive cervical cancer D.DE711 Observation":
+  Elements."Invasive cervical cancer D.DE711 Observation" O
     where O.effective.toInterval() during "Measurement Period"
-/* End of Invasive cervical cancer */
+/* End of Invasive cervical cancer D.DE711 */
 
 /*
 @dataElement: HIV.D.DE712 - Cervical cancer stage at diagnosis
@@ -5032,17 +5032,17 @@ define "TB diagnosis result Observation":
 @description: Client is diagnosed with TB disease
 */
 // TODO: Replace placeholder with relevant CQL logic
-define "Diagnosed TB":
-  exists "Diagnosed TB Condition"
-    or exists "Diagnosed TB Observation"
-define "Diagnosed TB Condition":
-  Elements."Diagnosed TB Condition" C
+define "Diagnosed TB D.DE940":
+  exists "Diagnosed TB D.DE940 Condition"
+    or exists "Diagnosed TB D.DE940 Observation"
+define "Diagnosed TB D.DE940 Condition":
+  Elements."Diagnosed TB D.DE940 Condition" C
     where C.prevalenceInterval() overlaps before "Measurement Period"
       or C.prevalenceInterval() overlaps after "Measurement Period"
-define "Diagnosed TB Observation":
-  Elements."Diagnosed TB Observation" O
+define "Diagnosed TB D.DE940 Observation":
+  Elements."Diagnosed TB D.DE940 Observation" O
     where O.effective.toInterval() during "Measurement Period"
-/* End of Diagnosed TB */
+/* End of Diagnosed TB D.DE940 */
 
 /*
 @dataElement: HIV.D.DE941 - TB excluded
@@ -5486,17 +5486,17 @@ define "On TPT with interruptions Observation":
 @description: The health care worker has temporarily stopped the TB preventive treatment (TPT), but TPT is expected to continue again later. May also be called 'suspended'.
 */
 // TODO: Replace placeholder with relevant CQL logic
-define "On hold":
-  exists "On hold Condition"
-    or exists "On hold Observation"
-define "On hold Condition":
-  Elements."On hold Condition" C
+define "On hold D.DE1038":
+  exists "On hold D.DE1038 Condition"
+    or exists "On hold D.DE1038 Observation"
+define "On hold D.DE1038 Condition":
+  Elements."On hold D.DE1038 Condition" C
     where C.prevalenceInterval() overlaps before "Measurement Period"
       or C.prevalenceInterval() overlaps after "Measurement Period"
-define "On hold Observation":
-  Elements."On hold Observation" O
+define "On hold D.DE1038 Observation":
+  Elements."On hold D.DE1038 Observation" O
     where O.effective.toInterval() during "Measurement Period"
-/* End of On hold */
+/* End of On hold D.DE1038 */
 
 /*
 @dataElement: HIV.D.DE1039 - Completed
@@ -5504,17 +5504,17 @@ define "On hold Observation":
 @description: TB preventive treatment (TPT) was completed
 */
 // TODO: Replace placeholder with relevant CQL logic
-define "Completed":
-  exists "Completed Condition"
-    or exists "Completed Observation"
-define "Completed Condition":
-  Elements."Completed Condition" C
+define "Completed D.DE1039":
+  exists "Completed D.DE1039 Condition"
+    or exists "Completed D.DE1039 Observation"
+define "Completed D.DE1039 Condition":
+  Elements."Completed D.DE1039 Condition" C
     where C.prevalenceInterval() overlaps before "Measurement Period"
       or C.prevalenceInterval() overlaps after "Measurement Period"
-define "Completed Observation":
-  Elements."Completed Observation" O
+define "Completed D.DE1039 Observation":
+  Elements."Completed D.DE1039 Observation" O
     where O.effective.toInterval() during "Measurement Period"
-/* End of Completed */
+/* End of Completed D.DE1039 */
 
 /*
 @dataElement: HIV.E.DE41 - Timing of ART initiation
@@ -6498,17 +6498,17 @@ define "HIV treatment outcome Observation":
 @description: Twenty-eight days or more since last missed appointment 
 */
 // TODO: Replace placeholder with relevant CQL logic
-define "Lost to follow-up":
-  exists "Lost to follow-up Condition"
-    or exists "Lost to follow-up Observation"
-define "Lost to follow-up Condition":
-  Elements."Lost to follow-up Condition" C
+define "Lost to follow-up H.DE42":
+  exists "Lost to follow-up H.DE42 Condition"
+    or exists "Lost to follow-up H.DE42 Observation"
+define "Lost to follow-up H.DE42 Condition":
+  Elements."Lost to follow-up H.DE42 Condition" C
     where C.prevalenceInterval() overlaps before "Measurement Period"
       or C.prevalenceInterval() overlaps after "Measurement Period"
-define "Lost to follow-up Observation":
-  Elements."Lost to follow-up Observation" O
+define "Lost to follow-up H.DE42 Observation":
+  Elements."Lost to follow-up H.DE42 Observation" O
     where O.effective.toInterval() during "Measurement Period"
-/* End of Lost to follow-up */
+/* End of Lost to follow-up H.DE42 */
 
 /*
 @dataElement: HIV.H.DE43 - Transferred out
@@ -6516,17 +6516,17 @@ define "Lost to follow-up Observation":
 @description: The client transferred to another facility
 */
 // TODO: Replace placeholder with relevant CQL logic
-define "Transferred out":
-  exists "Transferred out Condition"
-    or exists "Transferred out Observation"
-define "Transferred out Condition":
-  Elements."Transferred out Condition" C
+define "Transferred out H.DE43":
+  exists "Transferred out H.DE43 Condition"
+    or exists "Transferred out H.DE43 Observation"
+define "Transferred out H.DE43 Condition":
+  Elements."Transferred out H.DE43 Condition" C
     where C.prevalenceInterval() overlaps before "Measurement Period"
       or C.prevalenceInterval() overlaps after "Measurement Period"
-define "Transferred out Observation":
-  Elements."Transferred out Observation" O
+define "Transferred out H.DE43 Observation":
+  Elements."Transferred out H.DE43 Observation" O
     where O.effective.toInterval() during "Measurement Period"
-/* End of Transferred out */
+/* End of Transferred out H.DE43 */
 
 /*
 @dataElement: HIV.H.DE44 - Death documented
@@ -6534,17 +6534,17 @@ define "Transferred out Observation":
 @description: People living with HIV previously on ART who are confirmed to have died from any cause
 */
 // TODO: Replace placeholder with relevant CQL logic
-define "Death documented":
-  exists "Death documented Condition"
-    or exists "Death documented Observation"
-define "Death documented Condition":
-  Elements."Death documented Condition" C
+define "Death documented H.DE44":
+  exists "Death documented H.DE44 Condition"
+    or exists "Death documented H.DE44 Observation"
+define "Death documented H.DE44 Condition":
+  Elements."Death documented H.DE44 Condition" C
     where C.prevalenceInterval() overlaps before "Measurement Period"
       or C.prevalenceInterval() overlaps after "Measurement Period"
-define "Death documented Observation":
-  Elements."Death documented Observation" O
+define "Death documented H.DE44 Observation":
+  Elements."Death documented H.DE44 Observation" O
     where O.effective.toInterval() during "Measurement Period"
-/* End of Death documented */
+/* End of Death documented H.DE44 */
 
 /*
 @dataElement: HIV.H.DE45 - Refused stopped treatment
@@ -6552,17 +6552,17 @@ define "Death documented Observation":
 @description: Client was contacted and confirmed to have stopped ART (reasons may include stigma and discrimination, faith healing, etc.)
 */
 // TODO: Replace placeholder with relevant CQL logic
-define "Refused stopped treatment":
-  exists "Refused stopped treatment Condition"
-    or exists "Refused stopped treatment Observation"
-define "Refused stopped treatment Condition":
-  Elements."Refused stopped treatment Condition" C
+define "Refused stopped treatment H.DE45":
+  exists "Refused stopped treatment H.DE45 Condition"
+    or exists "Refused stopped treatment H.DE45 Observation"
+define "Refused stopped treatment H.DE45 Condition":
+  Elements."Refused stopped treatment H.DE45 Condition" C
     where C.prevalenceInterval() overlaps before "Measurement Period"
       or C.prevalenceInterval() overlaps after "Measurement Period"
-define "Refused stopped treatment Observation":
-  Elements."Refused stopped treatment Observation" O
+define "Refused stopped treatment H.DE45 Observation":
+  Elements."Refused stopped treatment H.DE45 Observation" O
     where O.effective.toInterval() during "Measurement Period"
-/* End of Refused stopped treatment */
+/* End of Refused stopped treatment H.DE45 */
 
 /*
 @dataElement: HIV.H.DE47 - On ART

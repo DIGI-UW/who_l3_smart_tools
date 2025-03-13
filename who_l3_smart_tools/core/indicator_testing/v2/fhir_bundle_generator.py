@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 import os
 import json
 import pandas as pd
@@ -8,9 +8,8 @@ import copy
 from who_l3_smart_tools.core.indicator_testing.v2.fhir_mapping_manager import (
     YamlMappingManager,
 )
-from who_l3_smart_tools.core.indicator_testing.v2.test_artifact_generator import (
-    generate_test_artifacts,
-)
+from who_l3_smart_tools.core.indicator_testing.v2 import test_artifact_generator
+from bs4 import BeautifulSoup
 
 
 class FhirBundleGenerator:
@@ -61,9 +60,8 @@ class FhirBundleGenerator:
         url = f"{self.ig_root_url}/Patient-{patient_profile_name}Default.json"
         return self.get_fhir_resource(url)
 
-    def get_feature_resources(self, resource_mapping):
-        """Retrieve the profile and default example resource for a given feature mapping."""
-        target_profile = resource_mapping.get("target_profile")
+    def get_profile(self, target_profile):
+        """Retrieve the profile for a given feature mapping."""
         if not target_profile:
             raise ValueError("Missing target_profile in mapping")
         # Query the StructureDefinition:
@@ -71,15 +69,19 @@ class FhirBundleGenerator:
             f"{self.ig_root_url}/StructureDefinition-{target_profile}.json"
         )
         profile = self.get_fhir_resource(target_profile_url)
+
+        return profile
+
+    def get_example_resource(self, example_name, profile):
         resource_type = profile.get("type")
-        # Query the default example:
-        target_example_url = (
-            f"{self.ig_root_url}/{resource_type}-{target_profile}Default.json"
-        )
+
+        # Query the example:
+        target_example_url = f"{self.ig_root_url}/{resource_type}-{example_name}.json"
         example = self.get_fhir_resource(target_example_url)
         # Assign a new unique id to the example resource.
         example["id"] = str(uuid.uuid4())
-        return profile, example
+
+        return example
 
     def update_patient_resource(self, patient_json, row):
         """Update patient example using row data."""
@@ -90,31 +92,19 @@ class FhirBundleGenerator:
                 patient_json["text"] = str(value)
         return patient_json
 
-    def update_feature_resource(self, example, resource_mapping, cell_value):
-        """Update the feature resource example with cell value based on the mapping's FHIR path."""
+    def update_feature_resource(self, template, resource_mapping, value_mapping):
 
         fhir_path = resource_mapping.get("target_fhir_path")
 
-        # Find the cell value in the `values` list of the mapping under `phenotype_value`, and grab the element it is part of.
-        value_mapping = next(
-            (
-                x
-                for x in resource_mapping.get("values", [])
-                if str(x.get("phenotype_value")) == str(cell_value)
-            ),
-            None,
-        )
+        if not fhir_path:
+            print("No FHIR path specified in resource mapping. Skipping update.")
+            return
 
-        # If the value is not found, return the example as is.
-        if not value_mapping:
-            return example
+        key = fhir_path.split(".")[-1]
+        target_value = value_mapping.get("fhir_value")
+        template[key] = target_value
 
-        # If value is found, update the example resource with the value at the field specified by the FHIR path.
-        if fhir_path:
-            key = fhir_path.split(".")[-1]
-            target_value = value_mapping.get("fhir_value")
-            example[key] = target_value
-        return example
+        return
 
     def build_bundle(self, patient_resource, feature_resources):
         """Construct a FHIR transaction Bundle from patient and feature resources."""
@@ -139,56 +129,234 @@ class FhirBundleGenerator:
 
     def _group_features(self, row):
         """
-        Groups feature mappings by grouping_id, updates their resources, applies 'exists'
-        flags, and ensures no conflicting exists values.
-        Returns a list of updated feature resources (only those where exists is not False).
+        Parse each feature column from the phenotype row and map values to FHIR resources.
+
+        Process:
+          1. Retrieve a mapping for the column (feature).
+          2. Determine how many example resources need to be created for the feature, based on
+             target_example or target_examples in the value mapping.
+          3. For each needed example resource:
+             • Initialize or fetch existing template from grouping_resources.
+             • Update the exists status if necessary.
+             • Use update_feature_resource to apply changes according to the FHIR path.
+          4. Return a list of feature resources where 'exists' is not False.
         """
         grouping_resources = {}
         for column_name, cell_value in row.iloc[0].items():
+
             # Skip patient-specific columns.
             if column_name in ["Patient Phenotype ID", "Phenotype Description"]:
                 continue
+
             resource_mapping = self.mapping_manager.get_feature_mapping(column_name)
+
             if not resource_mapping:
+                print(f"No mapping found for feature '{column_name}'. Skipping.")
                 continue
-            grouping_id = resource_mapping.get("grouping_id")
-            if grouping_id not in grouping_resources:
+
+            grouping_id = resource_mapping.get("grouping_id", "default")
+
+            # Retrieve relevant value mapping based on cell value
+            value_mapping = next(
+                (
+                    x
+                    for x in resource_mapping.get("values", [])
+                    if str(x.get("phenotype_value")) == str(cell_value)
+                ),
+                None,
+            )
+
+            if not value_mapping:
+                print(
+                    f"No value mapping found for cell value '{cell_value}' in feature '{column_name}'. Skipping."
+                )
+                continue
+
+            # Check if value mapping contains an exists: <val> field
+            # By default, exists_val is true
+            exists_val = True
+            if "exists" in value_mapping:
+                exists_val = value_mapping["exists"]
+
+            # Get target profile based on resource mapping
+            target_profile_name = resource_mapping.get("target_profile")
+            if not target_profile_name:
+                print(
+                    f"Missing target_profile in mapping for feature '{column_name}'. Skipping."
+                )
+                continue
+
+            profile = self.get_profile(target_profile_name)
+
+            # Get target example names
+            target_example_names = self._get_target_example_names(
+                value_mapping, target_profile_name
+            )
+
+            for target_example_name in target_example_names:
                 try:
-                    # Retrieve default resource example for the grouping.
-                    _, example = self.get_feature_resources(resource_mapping)
+                    target_example = self.get_example_resource(
+                        target_example_name, profile
+                    )
                 except Exception as e:
                     print(
-                        f"Skipping grouping '{grouping_id}' for feature '{column_name}' due to error: {e}"
+                        f"Skipping grouping for feature '{column_name}' due to error: {e}"
                     )
                     continue
-                grouping_resources[grouping_id] = {"resource": example, "exists": None}
-            # Evaluate exists flag from mapping values.
-            exists_val = None
-            for val_entry in resource_mapping.get("values", []):
-                if str(val_entry.get("phenotype_value")) == str(cell_value):
-                    if "exists" in val_entry:
-                        exists_val = val_entry["exists"]
-                        break
-            if exists_val is not None:
-                if grouping_resources[grouping_id]["exists"] is None:
-                    grouping_resources[grouping_id]["exists"] = exists_val
-                    grouping_resources[grouping_id]["resource"]["exists"] = exists_val
-                elif grouping_resources[grouping_id]["exists"] != exists_val:
-                    raise ValueError(
-                        f"Conflicting exists values for grouping {grouping_id}"
+
+                # Get or create template
+                foundTemplate = self._get_or_create_template(
+                    grouping_resources,
+                    grouping_id,
+                    target_example_name,
+                    target_example,
+                    exists_val,
+                )
+
+                # Update the feature resource based on FHIR path.
+                if foundTemplate:
+                    self.update_feature_resource(
+                        foundTemplate["template"], resource_mapping, value_mapping
                     )
-            # Update the feature resource based on FHIR path.
-            grouping_resources[grouping_id]["resource"] = self.update_feature_resource(
-                grouping_resources[grouping_id]["resource"],
-                resource_mapping,
-                cell_value,
+
+        # Filter and return resources where exists is not False
+        clean_grouping_resources = {
+            group_id: [
+                templateEntry
+                for templateEntry in templates
+                if templateEntry["exists"] is not False
+            ]
+            for group_id, templates in grouping_resources.items()
+        }
+
+        # Return resources if exists is not False
+        return clean_grouping_resources
+
+    def _get_target_example_names(self, value_mapping, target_profile_name):
+        """
+        Extracts target example names from the value mapping.
+        """
+        if "target_example" in value_mapping:
+            return [value_mapping["target_example"]]
+        elif "target_examples" in value_mapping:
+            return value_mapping["target_examples"]
+        else:
+            return [target_profile_name + "Default"]
+
+    def _get_or_create_template(
+        self,
+        grouping_resources,
+        grouping_id,
+        target_example_name,
+        target_example,
+        exists_val,
+    ):
+        """
+        Retrieves or creates a template resource within the grouping.
+        """
+        if grouping_id not in grouping_resources:
+            grouping_resources[grouping_id] = []
+            foundTemplate = None
+        else:
+            foundTemplate = next(
+                (
+                    t
+                    for t in grouping_resources[grouping_id]
+                    if t["name"] == target_example_name
+                ),
+                None,
             )
-        # Return resources only if exists flag is not false.
-        return [
-            grp["resource"]
-            for grp in grouping_resources.values()
-            if grp["exists"] is not False
-        ]
+
+        if not foundTemplate:
+            foundTemplate = {
+                "name": target_example_name,
+                "template": target_example,
+                "exists": exists_val,
+            }
+            if grouping_id not in grouping_resources:
+                grouping_resources[grouping_id] = []
+            grouping_resources[grouping_id].append(foundTemplate)
+        else:
+            # Merge 'exists' status
+            if "exists" not in foundTemplate or foundTemplate["exists"] is None:
+                foundTemplate["exists"] = exists_val
+            elif foundTemplate["exists"] != exists_val:
+                print(
+                    f"Conflicting exists values for grouping {grouping_id} and template {target_example_name}"
+                )
+                foundTemplate["exists"] = False
+
+        return foundTemplate
+
+    def _gather_dependent_libraries(self, library_resource, visited=None):
+        if visited is None:
+            visited = set()
+        libs = []
+        lib_url = library_resource.get("url")
+        if lib_url:
+            lib_dep_id = lib_url.rsplit("/", 1)[-1].split("|")[0]
+            if lib_dep_id not in visited:
+                visited.add(lib_dep_id)
+                for dependency in library_resource.get("relatedArtifact", []):
+                    if dependency.get("type") == "depends-on" and dependency[
+                        "resource"
+                    ].startswith("http://smart.who.int/hiv/Library/"):
+                        dep_id_version_part = dependency["resource"].split("/")[-1]
+                        dep_id = dep_id_version_part.split("|")[0]
+                        if dep_id not in visited:
+                            library_url = f"{self.ig_root_url}/Library-{dep_id}.json"
+                            dep_res = self.get_fhir_resource(library_url)
+                            libs.append(dep_res)
+                            libs.extend(
+                                self._gather_dependent_libraries(dep_res, visited)
+                            )
+        return libs
+
+    def _find_section_header(self, soup, title):
+        # Find the first h3 tag whose text matches the title exactly (after stripping)
+        for header in soup.find_all("h3"):
+            if header.get_text(strip=True) == title:
+                return header
+        return None
+
+    def gather_terminology_resources(self):
+        """
+        Fetches artifacts.html under the IG root and parses sections by finding h3 tags with
+        'Terminology: Value Sets' and 'Terminology: Code Systems' as content.
+        """
+        terminology_resources = []
+        try:
+            artifacts_url = f"{self.ig_root_url}/artifacts.html"
+            resp = requests.get(artifacts_url)
+            resp.raise_for_status()
+            html_content = resp.text
+
+            soup = BeautifulSoup(html_content, "html.parser")
+            sections = {
+                "Terminology: Value Sets": None,
+                "Terminology: Code Systems": None,
+            }
+            for title in sections:
+                header = self._find_section_header(soup, title)
+                if header:
+                    table = header.find_next("table", class_="grid")
+                    if table:
+                        for row in table.find_all("tr"):
+                            a_tag = row.find("a", href=True)
+                            if a_tag:
+                                json_link = a_tag["href"].replace(".html", ".json")
+                                if not json_link.startswith("http"):
+                                    json_link = (
+                                        f"{self.ig_root_url}/{json_link.lstrip('/')}"
+                                    )
+                                try:
+                                    resource = self.get_fhir_resource(json_link)
+                                    terminology_resources.append(resource)
+                                except Exception as e:
+                                    print(f"Error fetching {json_link}: {e}")
+        except requests.RequestException as e:
+            print(f"Error fetching artifacts.html: {e}")
+        return terminology_resources
 
     def gather_cql_resources(self, mapping_dak_id):
         """
@@ -196,8 +364,9 @@ class FhirBundleGenerator:
          - Measure resource from <ig_root>/Measure-{dak_id_without_periods}.json
          - Main Library resource referenced by the Measure resource.
          - Dependent Library resources based on 'depends-on' fields in the main Library.
+         - Terminology resources (CodeSystem and ValueSet) from artifacts.html.
 
-        Returns a dictionary with keys: 'measure', 'main_library', and 'dependent_libraries'.
+        Returns a dictionary with keys: 'measure', 'main_library', 'dependent_libraries', and 'terminology_resources'.
         """
         # Construct measure URL using dak_id (strip periods)
         measure_url = (
@@ -210,17 +379,13 @@ class FhirBundleGenerator:
         main_library_url = f"{self.ig_root_url}/Library-{library_id}.json"
         main_library_resource = self.get_fhir_resource(main_library_url)
 
-        dependent_libraries = []
-        for dependency in main_library_resource.get("relatedArtifact", []):
-            if dependency.get("type") == "depends-on":
-                dep_id_version_part = dependency["resource"].split("/")[-1]
-                dep_id = dep_id_version_part.split("|")[0]
-                library_url = f"{self.ig_root_url}/Library-{dep_id}.json"
-                dependent_libraries.append(self.get_fhir_resource(library_url))
+        dependent_libraries = self._gather_dependent_libraries(main_library_resource)
+        terminology_resources = self.gather_terminology_resources()
         return {
             "measure": measure_resource,
             "main_library": main_library_resource,
             "dependent_libraries": dependent_libraries,
+            "terminology_resources": terminology_resources,
         }
 
     def assemble_cql_bundle(self, patient_bundles, cql_resources):
@@ -232,6 +397,20 @@ class FhirBundleGenerator:
             cql_resources["measure"],
             cql_resources["main_library"],
         ] + cql_resources["dependent_libraries"]:
+            if not res.get("id"):
+                res["id"] = str(uuid.uuid4())
+            entries.append(
+                {
+                    "resource": res,
+                    "request": {
+                        "method": "PUT",
+                        "url": f"{res.get('resourceType')}/{res.get('id')}",
+                    },
+                }
+            )
+
+        # Add Terminology resources.
+        for res in cql_resources["terminology_resources"]:
             if not res.get("id"):
                 res["id"] = str(uuid.uuid4())
             entries.append(
@@ -323,14 +502,18 @@ class FhirBundleGenerator:
 
             # Process feature resources for this patient.
             feature_resources = self._group_features(row)
+            flat_resources = []
             # Update feature resources to point to the new patient id if needed.
-            feature_resources = [
-                self._update_patient_references(resource, new_patient_id)
-                for resource in feature_resources
-            ]
+            # Flatten the feature resources into a list.
+            for resource_list in feature_resources.values():
+                for resource_entry in resource_list:
+                    self._update_patient_references(
+                        resource_entry["template"], new_patient_id
+                    )
+                    flat_resources.append(resource_entry["template"])
 
             # Create patient bundle.
-            bundle = self.build_bundle(patient_resource, feature_resources)
+            bundle = self.build_bundle(patient_resource, flat_resources)
             bundle["id"] = str(uuid.uuid4())
 
             # Save the bundle to file.
@@ -361,52 +544,20 @@ class FhirBundleGenerator:
         """
         # Compute reporting period.
         rp = self.mapping_manager.mapping.get("reporting_period", {})
-        period_start = rp.get(
-            "start", (datetime.now() - timedelta(days=30)).isoformat()
-        )
+        period_start = rp.get("start", datetime.now().isoformat())
         period_end = rp.get("end", datetime.now().isoformat())
         reporting_period = {"start": period_start, "end": period_end}
-        total_population = len(self.phenotype_df)
-        # Build MeasureReport
-        measure_report = {
-            "resourceType": "MeasureReport",
-            "id": str(uuid.uuid4()),
-            "status": "final",
-            "type": "summary",
-            "date": datetime.now().isoformat(),
-            "period": reporting_period,
-            "group": [
-                {
-                    "population": [
-                        {
-                            "code": {"coding": [{"code": "initial-population"}]},
-                            "count": total_population,
-                        },
-                        {"code": {"coding": [{"code": "numerator"}]}, "count": 0},
-                        {
-                            "code": {"coding": [{"code": "denominator"}]},
-                            "count": total_population,
-                        },
-                    ]
-                }
-            ],
-        }
+
+        mapping_dak_id = self.mapping_manager.mapping.get("dak_id")
+        measure_report = test_artifact_generator.generate_measure_report(
+            self.phenotype_df, reporting_period, mapping_dak_id
+        )
+
         measure_report_filename = os.path.join(
-            self.output_directory, "test_bundle.json"
+            self.output_directory, "measure_report.json"
         )
         with open(measure_report_filename, "w") as f:
             f.write(json.dumps(measure_report, indent=2))
-
-        # Generate test artifacts using test_artifact_generator
-        artifacts = generate_test_artifacts(self.phenotype_df, reporting_period)
-
-        test_script_filename = os.path.join(self.output_directory, "test_script.json")
-        with open(test_script_filename, "w") as f:
-            f.write(json.dumps(artifacts[0], indent=2))
-
-        test_plan_filename = os.path.join(self.output_directory, "test_plan.json")
-        with open(test_plan_filename, "w") as f:
-            f.write(json.dumps(artifacts[1], indent=2))
 
         return measure_report
 

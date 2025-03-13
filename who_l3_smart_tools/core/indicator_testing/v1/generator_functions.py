@@ -16,7 +16,7 @@ from fhir.resources.episodeofcare import EpisodeOfCare
 from fhir.resources.bundle import Bundle
 from fhir.resources.bundle import BundleEntry
 from fhir.resources.bundle import BundleEntryRequest
-from fhir.resources.fhirtypes import Uri
+from fhir.resources.fhirtypes import UriType as Uri
 
 import random
 import time

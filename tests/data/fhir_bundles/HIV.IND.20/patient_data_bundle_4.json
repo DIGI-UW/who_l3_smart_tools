@@ -1,0 +1,84 @@
+{
+  "resourceType": "Bundle",
+  "type": "transaction",
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "id": "9a44b9f1-1eb7-4f04-9f2a-f3aee871d331",
+        "meta": {
+          "profile": [
+            "http://smart.who.int/hiv/StructureDefinition/HivPatient"
+          ]
+        },
+        "active": true,
+        "gender": "female",
+        "birthDate": "1990-01-02",
+        "address": [
+          {
+            "text": "Sample Address",
+            "country": "US"
+          }
+        ],
+        "identifier": [
+          {
+            "value": 1
+          },
+          {
+            "value": 2
+          },
+          {
+            "value": 3
+          },
+          {
+            "value": 4
+          }
+        ],
+        "text": "Patient with no HIV tests but positive HIV diagnosis during reporting period"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/9a44b9f1-1eb7-4f04-9f2a-f3aee871d331"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Condition",
+        "id": "1d9750bf-9a70-4de7-9afd-bff783f6fa96",
+        "meta": {
+          "profile": [
+            "http://smart.who.int/hiv/StructureDefinition/HivStatusCondition"
+          ]
+        },
+        "clinicalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+              "code": "active"
+            }
+          ]
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+                "code": "encounter-diagnosis"
+              }
+            ]
+          }
+        ],
+        "code": "#HIV.B.DE116",
+        "subject": {
+          "reference": "Patient/014ef6a2-4c12-47b2-a3f2-b6ef1b317c95"
+        },
+        "onsetDateTime": "2025-01-10T00:00:00Z"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Condition/1d9750bf-9a70-4de7-9afd-bff783f6fa96"
+      }
+    }
+  ],
+  "id": "313b136c-6c50-4868-96b0-701084c49ef3"
+}

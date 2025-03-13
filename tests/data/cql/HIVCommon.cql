@@ -146,7 +146,7 @@ define function ToDaily(frequency System.Integer, period System.Quantity):
     or end of period = maximum DateTime
 )
 
-  define function MedicationRequestPeriod(Request FHIR.MedicationRequest):
+  define fluent function MedicationRequestPeriod(Request MedicationRequest):
   Request R
     let
       dosage: singleton from R.dosageInstruction,
@@ -209,9 +209,36 @@ define function "DosesPerDay"(frequency Code):
   //dosage * Quantity { value: dosesPerDay, unit: '/d' }
 
 
+define fluent function dailyDose(Request "MedicationRequest"):
+  Request R
+    let
+      dosage: singleton from R.dosageInstruction,
+      doseAndRate: singleton from dosage.doseAndRate,
+      timing: dosage.timing,
+      frequency: Coalesce(timing.repeat.frequencyMax, timing.repeat.frequency),
+      period: System.Quantity { value: timing.repeat.period, unit: timing.repeat.periodUnit.value },
+      doseRange: doseAndRate.dose as Range,
+      doseQuantity: doseAndRate.dose as SimpleQuantity,
+      dose: Coalesce(doseRange.high, doseQuantity),
+      dosesPerDay: Coalesce(ToDaily(frequency, period), Count(timing.repeat.timeOfDay), 1.0),
+      quantity: R.dispenseRequest.quantity
+    return
+      quantity / (dose * dosesPerDay)
 
-
-
+define fluent function dailyDose(Dispense "MedicationDispense"):
+  Dispense D
+    let
+      dosage: singleton from D.dosageInstruction,
+      doseAndRate: singleton from dosage.doseAndRate,
+      timing: dosage.timing,
+      frequency: Coalesce(timing.repeat.frequencyMax, timing.repeat.frequency),
+      period: System.Quantity { value: timing.repeat.period, unit: timing.repeat.periodUnit.value },
+      doseRange: doseAndRate.dose as Range,
+      doseQuantity: doseAndRate.dose as SimpleQuantity,
+      dose: Coalesce(doseRange.high, doseQuantity),
+      dosesPerDay: Coalesce(ToDaily(frequency, period), Count(timing.repeat.timeOfDay), 1.0)
+    return
+      D.quantity / (dose * dosesPerDay)
 
 
 
@@ -227,7 +254,7 @@ define function "DosesPerDay"(frequency Code):
   define STI_testing:
     [Procedure] P
   where P.status = 'completed'
-  and P.code ~ Concepts."STI testing and treatment services"
+  and P.code ~ Concepts."STI testing and treatment services" 
 
 
 /**

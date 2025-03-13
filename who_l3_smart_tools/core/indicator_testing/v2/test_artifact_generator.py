@@ -1,5 +1,6 @@
 from datetime import datetime
 import json
+import pandas as pd
 
 # Definitions and Examples
 test_plan_definition_json = r"""{
@@ -249,7 +250,9 @@ measure_report_example = {
 
 def generate_test_artifacts(phenotype_dataset, reporting_period):
     # Generate MeasureReport using the existing function
-    measure_report = generate_measure_report(phenotype_dataset, reporting_period)
+    measure_report = generate_measure_report(
+        phenotype_dataset, reporting_period, "HIV", "tests/output/measure_report.json"
+    )
 
     # Load and update TestPlan
     test_plan = json.loads(test_plan_definition_json)
@@ -378,9 +381,10 @@ def generate_test_artifacts(phenotype_dataset, reporting_period):
             "resource": res,
             "request": {
                 "method": "PUT",
-                "url": f"{res.get('resourceType')}/{res.get('id')}"
-            }
+                "url": f"{res.get('resourceType')}/{res.get('id')}",
+            },
         }
+
     measure_report = transaction_wrap(measure_report)
     test_plan = transaction_wrap(test_plan)
     test_script = transaction_wrap(test_script)
@@ -398,37 +402,56 @@ def generate_test_artifacts(phenotype_dataset, reporting_period):
     return json.dumps(test_bundle, indent=4)
 
 
-def generate_measure_report(phenotype_dataset, reporting_period, output_json=None):
-    # Count sum of 1s in the `Counted as Numerator (0,1)` and `Counted as Denominator (0,1)` columns
-    denominator_sum = sum(phenotype_dataset["Counted as Denominator (0,1)"])
-    numerator_sum = sum(phenotype_dataset["Counted as Numerator (0,1)"])
-
+def generate_measure_report(
+    phenotype_dataset, reporting_period, mapping_dak_id, output_json=None
+):
+    # Use the logic from generate_test_bundle in fhir_bundle_generator.
+    measure_key = mapping_dak_id.replace(".", "")
+    denominator_count = 0
+    numerator_count = 0
+    for idx, row in phenotype_dataset.iterrows():
+        num_val = None
+        denom_val = None
+        for col in row.index:
+            if (
+                not col
+                or (pd.api.types.is_scalar(row[col]) and pd.isna(row[col]))
+                or (not pd.api.types.is_scalar(row[col]) and row[col].empty)
+                or not isinstance(col, str)
+            ):
+                continue
+                continue
+            lower_col = col.lower()
+            if lower_col.startswith("counted as denominator"):
+                denom_val = row[col]
+            elif lower_col.startswith("counted as numerator"):
+                num_val = row[col]
+        if denom_val == 1:
+            denominator_count += 1
+        if num_val == 1:
+            numerator_count += 1
+    score_val = 0.0
+    if denominator_count > 0:
+        score_val = numerator_count / denominator_count
     measure_report = {
         "resourceType": "MeasureReport",
-        "id": "measurereport-v2",
         "status": "complete",
         "type": "summary",
-        "measure": "http://example.org/measure/HIV.IND.20",
+        "measure": f"http://smart.who.int/hiv/Measure/{measure_key}",
         "date": datetime.now().isoformat(),
         "period": {"start": reporting_period["start"], "end": reporting_period["end"]},
         "group": [
             {
                 "population": [
-                    {
-                        "code": {"coding": [{"code": "initial-population"}]},
-                        "count": denominator_sum,
-                    },
-                    {
-                        "code": {"coding": [{"code": "numerator"}]},
-                        "count": numerator_sum,
-                    },
-                ]
+                    {"id": f"{mapping_dak_id}.IP", "count": denominator_count},
+                    {"id": f"{mapping_dak_id}.DEN", "count": denominator_count},
+                    {"id": f"{mapping_dak_id}.NUM", "count": numerator_count},
+                ],
+                "measureScore": {"value": score_val},
             }
         ],
     }
-
     if output_json is not None:
         with open(output_json, "w") as f:
-            json.dump(measure_report, f, indent=4)
-
+            json.dump(measure_report, f, indent=2)
     return measure_report

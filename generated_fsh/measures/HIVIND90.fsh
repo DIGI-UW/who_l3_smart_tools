@@ -8,7 +8,7 @@ Title: "HIV.IND.90 HBV treatment among people living with HIV"
 * url = "http://smart.who.int/hiv/Measure/HIVIND90"
 * status = #draft
 * experimental = true
-* date = "2024-08-18"
+* date = "2025-03-13"
 * name = "HIVIND90"
 * title = "HIV.IND.90 HBV treatment among people living with HIV"
 * publisher = "World Health Organization (WHO)"
@@ -33,3 +33,7 @@ Title: "HIV.IND.90 HBV treatment among people living with HIV"
     * code = $measure-population#numerator "Numerator"
     * criteria.language = #text/cql-identifier
     * criteria.expression = "Numerator"
+  * stratifier[+]
+    * id = "HIV.IND.90.S"
+    * criteria.language = #text/cql-identifier
+    * criteria.expression = "Stratification"

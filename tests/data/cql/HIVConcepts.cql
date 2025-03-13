@@ -7,7 +7,8 @@
 // Codes are provided for each Data Dictionary concept
 // Specific Data Element IDs are appended to the label if the label is not unique within the DAK
 
-library HIVConcepts
+library HIVConcepts version '0.0.2'
+
 codesystem "HIVConcepts": 'http://smart.who.int/hiv/CodeSystem/HIVConcepts'
 
 valueset "Referred by Choices": 'http://smart.who.int/hiv/ValueSet/HIV.A.DE5'
@@ -388,7 +389,7 @@ code "Prevention services offered and referrals - HIV.B.DE149": 'HIV.B.DE149' fr
 code "Offer male and female condoms and condom-compatible lubricants - HIV.B.DE150": 'HIV.B.DE150' from "HIVConcepts" display 'Offer male and female condoms and condom-compatible lubricants'
 code "Offer pre-exposure prophylaxis PrEP for people at elevated risk for HIV acquisition": 'HIV.B.DE151' from "HIVConcepts" display 'Offer pre-exposure prophylaxis PrEP for people at elevated risk for HIV acquisition'
 code "Offer post-exposure prophylaxis PEP following suspected exposure": 'HIV.B.DE152' from "HIVConcepts" display 'Offer post-exposure prophylaxis PEP following suspected exposure'
-code "Voluntary medical male circumcision VMMC": 'HIV.B.DE153' from "HIVConcepts" display 'Voluntary medical male circumcision VMMC'
+code "Voluntary medical male circumcision VMMC referral": 'HIV.B.DE153' from "HIVConcepts" display 'Voluntary medical male circumcision VMMC referral offered'
 code "Harm reduction for people who inject drugs - HIV.B.DE154": 'HIV.B.DE154' from "HIVConcepts" display 'Harm reduction for people who inject drugs'
 code "Behavioural interventions to support risk reduction, particularly for people with HIV and members of key populations": 'HIV.B.DE155' from "HIVConcepts" display 'Behavioural interventions to support risk reduction, particularly for people with HIV and members of key populations'
 code "HIV testing for partners and biological children - HIV.B.DE156": 'HIV.B.DE156' from "HIVConcepts" display 'HIV testing for partners and biological children'
@@ -417,6 +418,7 @@ code "Type of follow-up appointment - HIV.B.DE191": 'HIV.B.DE191' from "HIVConce
 code "Retesting for HIV - HIV.B.DE192": 'HIV.B.DE192' from "HIVConcepts" display 'Retesting for HIV'
 code "Other - HIV.B.DE193": 'HIV.B.DE193' from "HIVConcepts" display 'Other'
 code "Date/time of follow-up appointment - HIV.B.DE195": 'HIV.B.DE195' from "HIVConcepts" display 'Date/time of follow-up appointment'
+code "VMMC procedure": 'HIV.B.DE197' from "HIVConcepts" display 'VMMC procedure performed'
 code "VMMC procedure date": 'HIV.B.DE198' from "HIVConcepts" display 'VMMC procedure date'
 code "Adverse event severity": 'HIV.B.DE201' from "HIVConcepts" display 'Adverse event severity'
 code "Moderate": 'HIV.B.DE202' from "HIVConcepts" display 'Moderate'
@@ -560,7 +562,7 @@ code "Follow-up appointment for PrEP": 'HIV.C.DE127' from "HIVConcepts" display 
 code "Other - HIV.C.DE128": 'HIV.C.DE128' from "HIVConcepts" display 'Other'
 code "Prevention services offered and referrals - HIV.C.DE131": 'HIV.C.DE131' from "HIVConcepts" display 'Prevention services offered and referrals'
 code "Male and female condoms and condom-compatible lubricants offered": 'HIV.C.DE132' from "HIVConcepts" display 'Male and female condoms and condom-compatible lubricants offered'
-code "Voluntary medical male circumcision VMMC referral": 'HIV.C.DE133' from "HIVConcepts" display 'Voluntary medical male circumcision VMMC referral'
+code "Voluntary medical male circumcision VMMC referral - HIV.C.DE133": 'HIV.C.DE133' from "HIVConcepts" display 'Voluntary medical male circumcision VMMC referral'
 code "Harm reduction for people who inject drugs - HIV.C.DE134": 'HIV.C.DE134' from "HIVConcepts" display 'Harm reduction for people who inject drugs'
 code "Behavioural interventions to support risk reduction - HIV.C.DE135": 'HIV.C.DE135' from "HIVConcepts" display 'Behavioural interventions to support risk reduction'
 code "Condom type": 'HIV.C.DE138' from "HIVConcepts" display 'Condom type'
@@ -1208,6 +1210,8 @@ code "Date injecting equipment provided": 'HIV.PRV.DE15' from "HIVConcepts" disp
 code "Date OAMT initiated": 'HIV.PRV.DE17' from "HIVConcepts" display 'Date OAMT initiated'
 code "Currently on OAMT": 'HIV.PRV.DE20' from "HIVConcepts" display 'Currently on OAMT'
 code "Retained on OAMT": 'HIV.PRV.DE21' from "HIVConcepts" display 'Retained on OAMT'
+code "Client being inducted on OAMT": 'HIV.PRV.DE22' from "HIVConcepts" display 'Client being inducted on OAMT'
+code "Client on reducing doses of OAMT": 'HIV.PRV.DE23' from "HIVConcepts" display 'Client on reducing doses of OAMT'
 code "Date of loss to follow-up or OAMT stopped": 'HIV.PRV.DE25' from "HIVConcepts" display 'Date of loss to follow-up or OAMT stopped'
 code "Date medications prescribed - HIV.PRV.DE27": 'HIV.PRV.DE27' from "HIVConcepts" display 'Date medications prescribed'
 code "Number of days prescribed - HIV.PRV.DE28": 'HIV.PRV.DE28' from "HIVConcepts" display 'Number of days prescribed'
@@ -1235,3 +1239,6 @@ code "Other priority populations": 'HIV.Config.DE19' from "HIVConcepts" display 
 code "Reporting period end date": 'HIV.Config.DE20' from "HIVConcepts" display 'Reporting period end date'
 code "Reporting period start date": 'HIV.Config.DE21' from "HIVConcepts" display 'Reporting period start date'
 code "Reporting date": 'HIV.Config.DE22' from "HIVConcepts" display 'Reporting date'
+
+// Additional
+code "Live birth": 'HIV.E.DE48' from "HIVConcepts" display 'Live birth'

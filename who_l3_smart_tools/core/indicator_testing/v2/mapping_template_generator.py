@@ -40,6 +40,11 @@ def generate_mapping_template(phenotype_excel, output_yaml):
     comment_lines = []
     for field in key_fields:
         val = meta_dict.get(field, "")
+
+        # Convert to string if not already
+        if not isinstance(val, str):
+            val = str(val)
+
         # Heading line
         comment_lines.append(f"# **{field}**")
         if (
@@ -52,13 +57,17 @@ def generate_mapping_template(phenotype_excel, output_yaml):
         ):
             # Blank line after heading
             comment_lines.append("#")
-            # Split by newline or comma
             for item in [
                 itm.strip() for itm in re.split(r"[\n,]+", val) if itm.strip()
             ]:
                 comment_lines.append(f"#   - {item}")
         else:
-            comment_lines.append(f"#   {val}")
+            # Split multiline text and comment out each line
+            if val.strip():
+                for line in val.splitlines():
+                    comment_lines.append(f"#   {line}")
+            else:
+                comment_lines.append("#   ")
         # Add a blank line for spacing
         comment_lines.append("#")
 
@@ -71,6 +80,10 @@ def generate_mapping_template(phenotype_excel, output_yaml):
     mapping_template = {
         "dak_id": dak_id,
         "patient_profile": "HivPatient",
+        "reporting_period": {
+            "start": "2025-01-01",
+            "end": "2025-01-30",
+        },
         "features": [],
     }
 

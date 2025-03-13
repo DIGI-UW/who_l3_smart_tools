@@ -1,0 +1,133 @@
+{
+  "resourceType": "Bundle",
+  "type": "transaction",
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "id": "4b1e8eda-88bf-48f3-95ec-7ad549e29b5e",
+        "meta": {
+          "profile": [
+            "http://smart.who.int/hiv/StructureDefinition/HivPatient"
+          ]
+        },
+        "active": true,
+        "gender": "female",
+        "birthDate": "1990-01-02",
+        "address": [
+          {
+            "text": "Sample Address",
+            "country": "US"
+          }
+        ],
+        "identifier": [
+          {
+            "value": 1
+          },
+          {
+            "value": 2
+          },
+          {
+            "value": 3
+          }
+        ],
+        "text": "Has multiple associated conditions"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/4b1e8eda-88bf-48f3-95ec-7ad549e29b5e"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Condition",
+        "id": "e0b3fa26-f330-4174-be5f-e931142097f7",
+        "meta": {
+          "profile": [
+            "http://smart.who.int/hiv/StructureDefinition/HivCondition"
+          ]
+        },
+        "clinicalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+              "code": "active"
+            }
+          ]
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+                "code": "encounter-diagnosis"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://smart.who.int/hiv/CodeSystem/HIVConcepts",
+              "code": "HIV.B.DE116"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/9e5c6d70-8b1d-48a3-8d2b-ab7bb0e66681"
+        },
+        "onsetDateTime": "2025-01-15T08:30:00Z"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Condition/e0b3fa26-f330-4174-be5f-e931142097f7"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Condition",
+        "id": "ee6545a7-9516-49f0-9428-abc36efe853a",
+        "meta": {
+          "profile": [
+            "http://smart.who.int/hiv/StructureDefinition/HivCondition"
+          ]
+        },
+        "clinicalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+              "code": "active"
+            }
+          ]
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+                "code": "encounter-diagnosis"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://smart.who.int/hiv/CodeSystem/HIVConcepts",
+              "code": "HIV.B.DE116"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/4b1e8eda-88bf-48f3-95ec-7ad549e29b5e"
+        },
+        "onsetDateTime": "2025-01-17T08:30:00Z"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Condition/ee6545a7-9516-49f0-9428-abc36efe853a"
+      }
+    }
+  ],
+  "id": "04627e6a-d72e-4181-8f67-eafb4d5b91cc"
+}
