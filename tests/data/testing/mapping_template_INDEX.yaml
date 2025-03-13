@@ -49,4 +49,4 @@ features:
     exists: false
   - phenotype_value: '2'
     exists: true
-    target_examples: ['HivConditionDefault', 'HivConditionDouble']
+    target_examples: ['HivConditionDefault', 'HivConditionExample2']

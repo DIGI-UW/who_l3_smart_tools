@@ -6,6 +6,7 @@ import pandas as pd
 import requests
 import json
 import math
+import logging
 from who_l3_smart_tools.core.indicator_testing.v2.phenotype_generator import (
     generate_phenotype_xlsx,
 )
@@ -167,7 +168,7 @@ class TestFhirBundleTests(unittest.TestCase):
         self.assertEqual(resource_types.count("Patient"), 3)
         self.assertEqual(resource_types.count("Condition"), 3)
         self.assertEqual(resource_types.count("Measure"), 1)
-        self.assertEqual(resource_types.count("Library"), 1)
+        self.assertEqual(resource_types.count("Library"), 2)
         
 
 
@@ -182,7 +183,7 @@ class TestFhirBundleTests(unittest.TestCase):
             self.fail(f"FHIR server check failed: {e}")
 
         # Load and post the CQL bundle
-        subfolder = os.path.join("tests/output/fhir_bundles", "HIV.IND.20")
+        subfolder = os.path.join("tests/output/fhir_bundles", "HIV.IND.EX")
         cql_bundle_path = os.path.join(subfolder, "cql_bundle.json")
         with open(cql_bundle_path, "r") as f:
             cql_bundle = json.load(f)
@@ -217,12 +218,29 @@ class TestFhirBundleTests(unittest.TestCase):
         self.assertIsNotNone(period_end, "Period end missing in expected report.")
 
         # Execute the $evaluate-measure operation using the period from expected report.
-        evaluate_url = f"{FHIR_SERVER_URL}/Measure/HIVIND20/$evaluate-measure"
+        evaluate_url = f"{FHIR_SERVER_URL}/Measure/HIVINDEX/$evaluate-measure"
         params = {"periodStart": period_start, "periodEnd": period_end}
         resp = requests.get(evaluate_url, params=params)
 
         # Print response
         print(resp.text)
+        logging.basicConfig(level=logging.INFO, force=True)
+        logging.info("Evaluate measure response: %s", resp.text)
+        self.assertIn('"resourceType": "MeasureReport"', resp.text, "Evaluate measure response does not contain MeasureReport resource.")
+
+        # Make sure measureScore is equal to 2/3
+        self.assertIn("measureScore", resp.text, "Measure score not found in response.")
+        measure_score = resp.json().get("measureScore")
+        if measure_score is not None:
+            self.assertAlmostEqual(
+                measure_score,
+                0.6666666666666666,
+                delta=0.0001,
+                msg="Measure score is not equal to 2/3.",
+            )
+        else:
+            self.fail("Measure score is None.")
+
 
         # self.assertEqual(resp.status_code, 200, "Evaluate measure operation failed.")
         # new_report = resp.json()
