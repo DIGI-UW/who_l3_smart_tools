@@ -1,0 +1,32 @@
+{
+  "resourceType": "MeasureReport",
+  "status": "complete",
+  "type": "summary",
+  "measure": "http://smart.who.int/hiv/Measure/HIVINDEX",
+  "date": "2025-03-13T15:56:48.417887",
+  "period": {
+    "start": "2025-01-01",
+    "end": "2025-01-30"
+  },
+  "group": [
+    {
+      "population": [
+        {
+          "id": "HIV.IND.EX.IP",
+          "count": 3
+        },
+        {
+          "id": "HIV.IND.EX.DEN",
+          "count": 3
+        },
+        {
+          "id": "HIV.IND.EX.NUM",
+          "count": 2
+        }
+      ],
+      "measureScore": {
+        "value": 0.6666666666666666
+      }
+    }
+  ]
+}

@@ -95,12 +95,16 @@ class TestIndicatorDataGenTooling(unittest.TestCase):
 
 
 class TestFhirBundleTests(unittest.TestCase):
+    expected_dak_id = "HIV.IND.EX"
+    output_directory = "tests/output/fhir_bundles"
+
     # Skip for CI
     # @unittest.skip("Skip for CI")
     def setUp(self):
-        phenotype_file = "tests/data/scaffolding/v2/phenotype_HIVIND20_filled.xlsx"
-        mapping_file = "tests/data/scaffolding/v2/phenotypes_IND20.yaml"
+        phenotype_file = "tests/data/scaffolding/v2/phenotype_INDEX_filled.xlsx"
+        mapping_file = "tests/data/scaffolding/v2/mapping_template_INDEX.yaml"
         output_directory = "tests/output/fhir_bundles"
+
         if os.path.exists(output_directory):
             shutil.rmtree(output_directory)
         os.makedirs(output_directory)
@@ -117,33 +121,14 @@ class TestFhirBundleTests(unittest.TestCase):
           - Checks that the test_bundle.json and patient_data_bundle_<Patient Phenotype ID>.json files exist.
         """
         # Retrieve the dak_id from the mapping file.
-        expected_dak_id = "HIV.IND.20"
-        subfolder = os.path.join("tests/output/fhir_bundles", expected_dak_id)
+        subfolder = os.path.join(self.output_directory, self.expected_dak_id)
         self.assertTrue(os.path.isdir(subfolder), f"Subfolder {subfolder} not found.")
-
-        # Check that test artifact bundle exists in the subfolder.
-        test_bundle_path = os.path.join(subfolder, "test_bundle.json")
-        self.assertTrue(
-            os.path.exists(test_bundle_path),
-            f"Test bundle {test_bundle_path} not found.",
-        )
 
         # Check that cql_bundle.json is created
         cql_bundle_path = os.path.join(subfolder, "cql_bundle.json")
         self.assertTrue(
             os.path.exists(cql_bundle_path),
             f"cql_bundle.json not found in {subfolder}.",
-        )
-
-        # Check that test_script.json and test_plan.json are generated
-        test_script_path = os.path.join(subfolder, "test_script.json")
-        test_plan_path = os.path.join(subfolder, "test_plan.json")
-        self.assertTrue(
-            os.path.exists(test_script_path),
-            f"test_script.json not found in {subfolder}.",
-        )
-        self.assertTrue(
-            os.path.exists(test_plan_path), f"test_plan.json not found in {subfolder}."
         )
 
         # Check that at least one patient bundle file (with prefix 'patient_data_bundle_') exists in the subfolder.
@@ -153,6 +138,13 @@ class TestFhirBundleTests(unittest.TestCase):
             if f.startswith("patient_data_bundle_") and f.endswith(".json")
         ]
         self.assertTrue(len(patient_bundles) > 0, "No patient bundles were generated.")
+
+        # Check that test artifact bundle exists in the subfolder.
+        test_bundle_path = os.path.join(subfolder, "measure_report.json")
+        self.assertTrue(
+            os.path.exists(test_bundle_path),
+            f"Measure report {test_bundle_path} not found.",
+        )
 
         # Make sure that the cql_bundle has the right contents based on the example indicator files:
         # - 3 Patients

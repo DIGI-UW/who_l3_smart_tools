@@ -1,5 +1,6 @@
 from datetime import datetime
 import json
+import pandas as pd
 
 # Definitions and Examples
 test_plan_definition_json = r"""{
@@ -409,9 +410,25 @@ def generate_measure_report(
     denominator_count = 0
     numerator_count = 0
     for idx, row in phenotype_dataset.iterrows():
-        if row["Count as Denominator"] == 1:
+        num_val = None
+        denom_val = None
+        for col in row.index:
+            if (
+                not col
+                or (pd.api.types.is_scalar(row[col]) and pd.isna(row[col]))
+                or (not pd.api.types.is_scalar(row[col]) and row[col].empty)
+                or not isinstance(col, str)
+            ):
+                continue
+                continue
+            lower_col = col.lower()
+            if lower_col.startswith("counted as denominator"):
+                denom_val = row[col]
+            elif lower_col.startswith("counted as numerator"):
+                num_val = row[col]
+        if denom_val == 1:
             denominator_count += 1
-        if row["Count as Numerator"] == 1:
+        if num_val == 1:
             numerator_count += 1
     score_val = 0.0
     if denominator_count > 0:

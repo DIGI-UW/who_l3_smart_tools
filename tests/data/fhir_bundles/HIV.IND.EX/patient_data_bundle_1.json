@@ -5,7 +5,7 @@
     {
       "resource": {
         "resourceType": "Patient",
-        "id": "6fa6d4e4-0295-43d6-96bf-1f26439ee3c4",
+        "id": "9e5c6d70-8b1d-48a3-8d2b-ab7bb0e66681",
         "meta": {
           "profile": [
             "http://smart.who.int/hiv/StructureDefinition/HivPatient"
@@ -29,13 +29,13 @@
       },
       "request": {
         "method": "PUT",
-        "url": "Patient/6fa6d4e4-0295-43d6-96bf-1f26439ee3c4"
+        "url": "Patient/9e5c6d70-8b1d-48a3-8d2b-ab7bb0e66681"
       }
     },
     {
       "resource": {
         "resourceType": "Condition",
-        "id": "f71d32e3-466e-4097-b1b1-79532decb8b0",
+        "id": "05e763a8-77b7-4d3d-bf57-e68c4017a81e",
         "meta": {
           "profile": [
             "http://smart.who.int/hiv/StructureDefinition/HivCondition"
@@ -68,15 +68,15 @@
           ]
         },
         "subject": {
-          "reference": "Patient/6fa6d4e4-0295-43d6-96bf-1f26439ee3c4"
+          "reference": "Patient/9e5c6d70-8b1d-48a3-8d2b-ab7bb0e66681"
         },
         "onsetDateTime": "2025-01-15T08:30:00Z"
       },
       "request": {
         "method": "PUT",
-        "url": "Condition/f71d32e3-466e-4097-b1b1-79532decb8b0"
+        "url": "Condition/05e763a8-77b7-4d3d-bf57-e68c4017a81e"
       }
     }
   ],
-  "id": "f17321f0-c0bc-45ed-b396-d0f6973da7e3"
+  "id": "032ece13-7b82-460c-a5a8-1b0ead2e7d88"
 }

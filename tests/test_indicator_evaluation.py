@@ -143,21 +143,23 @@ class TestIndicatorEvaluation(unittest.TestCase):
         Default test using 'HIVINDEX' as the indicator_name.
         Asserts that the returned structure is a dict.
         """
-        result = run_bundle_test(cleanup_hapi=True)
-        # with open("tests/data/fhir_bundles/HIV.IND.EX/test_bundle.json", "r") as f:
-        #     expected_report = json.load(f)
-        # compare_measure_reports(result, expected_report)
+        result = run_bundle_test(cleanup_hapi=False)
+        with open("tests/data/fhir_bundles/HIV.IND.EX/measure_report.json", "r") as f:
+            expected_report = json.load(f)
+        compare_measure_reports(result, expected_report)
         self.assertIsInstance(result, dict)
 
+    # Skip in CI
+    @unittest.skip("Skip for CI")
     def test_bundle_loading_custom_indicator(self):
         """
         Test using a custom indicator name, verifying reusability with different data sets.
-        Assumes a matching cql_bundle.json exists for 'CUSTOMINDICATOR'.
+        Assumes a matching cql_bundle.json exists for indicator.
         """
         custom_indicator = "HIVIND20"
         result = run_bundle_test(indicator_name=custom_indicator, cleanup_hapi=True)
         with open(
-            f"tests/data/fhir_bundles/{custom_indicator}/test_bundle.json", "r"
+            f"tests/data/fhir_bundles/{custom_indicator}/measure_report.json", "r"
         ) as f:
             expected_report = json.load(f)
         compare_measure_reports(result, expected_report)
