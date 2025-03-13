@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 import os
 import json
 import pandas as pd
@@ -8,10 +8,7 @@ import copy
 from who_l3_smart_tools.core.indicator_testing.v2.fhir_mapping_manager import (
     YamlMappingManager,
 )
-from who_l3_smart_tools.core.indicator_testing.v2.test_artifact_generator import (
-    generate_test_artifacts,
-)
-
+from who_l3_smart_tools.core.indicator_testing.v2 import test_artifact_generator
 from bs4 import BeautifulSoup
 
 
@@ -146,11 +143,11 @@ class FhirBundleGenerator:
         """
         grouping_resources = {}
         for column_name, cell_value in row.iloc[0].items():
-            
+
             # Skip patient-specific columns.
             if column_name in ["Patient Phenotype ID", "Phenotype Description"]:
                 continue
-            
+
             resource_mapping = self.mapping_manager.get_feature_mapping(column_name)
 
             if not resource_mapping:
@@ -192,11 +189,15 @@ class FhirBundleGenerator:
             profile = self.get_profile(target_profile_name)
 
             # Get target example names
-            target_example_names = self._get_target_example_names(value_mapping, target_profile_name)
+            target_example_names = self._get_target_example_names(
+                value_mapping, target_profile_name
+            )
 
             for target_example_name in target_example_names:
                 try:
-                    target_example = self.get_example_resource(target_example_name, profile)
+                    target_example = self.get_example_resource(
+                        target_example_name, profile
+                    )
                 except Exception as e:
                     print(
                         f"Skipping grouping for feature '{column_name}' due to error: {e}"
@@ -204,18 +205,25 @@ class FhirBundleGenerator:
                     continue
 
                 # Get or create template
-                foundTemplate = self._get_or_create_template(grouping_resources, grouping_id, target_example_name, target_example, exists_val)
+                foundTemplate = self._get_or_create_template(
+                    grouping_resources,
+                    grouping_id,
+                    target_example_name,
+                    target_example,
+                    exists_val,
+                )
 
                 # Update the feature resource based on FHIR path.
                 if foundTemplate:
                     self.update_feature_resource(
-                        foundTemplate['template'], resource_mapping, value_mapping
+                        foundTemplate["template"], resource_mapping, value_mapping
                     )
 
         # Filter and return resources where exists is not False
         clean_grouping_resources = {
             group_id: [
-                templateEntry for templateEntry in templates
+                templateEntry
+                for templateEntry in templates
                 if templateEntry["exists"] is not False
             ]
             for group_id, templates in grouping_resources.items()
@@ -235,7 +243,14 @@ class FhirBundleGenerator:
         else:
             return [target_profile_name + "Default"]
 
-    def _get_or_create_template(self, grouping_resources, grouping_id, target_example_name, target_example, exists_val):
+    def _get_or_create_template(
+        self,
+        grouping_resources,
+        grouping_id,
+        target_example_name,
+        target_example,
+        exists_val,
+    ):
         """
         Retrieves or creates a template resource within the grouping.
         """
@@ -243,7 +258,14 @@ class FhirBundleGenerator:
             grouping_resources[grouping_id] = []
             foundTemplate = None
         else:
-            foundTemplate = next((t for t in grouping_resources[grouping_id] if t["name"] == target_example_name), None)
+            foundTemplate = next(
+                (
+                    t
+                    for t in grouping_resources[grouping_id]
+                    if t["name"] == target_example_name
+                ),
+                None,
+            )
 
         if not foundTemplate:
             foundTemplate = {
@@ -485,9 +507,11 @@ class FhirBundleGenerator:
             # Flatten the feature resources into a list.
             for resource_list in feature_resources.values():
                 for resource_entry in resource_list:
-                    self._update_patient_references(resource_entry['template'], new_patient_id)
-                    flat_resources.append(resource_entry['template'])
-                
+                    self._update_patient_references(
+                        resource_entry["template"], new_patient_id
+                    )
+                    flat_resources.append(resource_entry["template"])
+
             # Create patient bundle.
             bundle = self.build_bundle(patient_resource, flat_resources)
             bundle["id"] = str(uuid.uuid4())
@@ -520,52 +544,20 @@ class FhirBundleGenerator:
         """
         # Compute reporting period.
         rp = self.mapping_manager.mapping.get("reporting_period", {})
-        period_start = rp.get(
-            "start", (datetime.now() - timedelta(days=30)).isoformat()
-        )
+        period_start = rp.get("start", datetime.now().isoformat())
         period_end = rp.get("end", datetime.now().isoformat())
         reporting_period = {"start": period_start, "end": period_end}
-        total_population = len(self.phenotype_df)
-        # Build MeasureReport
-        measure_report = {
-            "resourceType": "MeasureReport",
-            "id": str(uuid.uuid4()),
-            "status": "final",
-            "type": "summary",
-            "date": datetime.now().isoformat(),
-            "period": reporting_period,
-            "group": [
-                {
-                    "population": [
-                        {
-                            "code": {"coding": [{"code": "initial-population"}]},
-                            "count": total_population,
-                        },
-                        {"code": {"coding": [{"code": "numerator"}]}, "count": 0},
-                        {
-                            "code": {"coding": [{"code": "denominator"}]},
-                            "count": total_population,
-                        },
-                    ]
-                }
-            ],
-        }
+
+        mapping_dak_id = self.mapping_manager.mapping.get("dak_id")
+        measure_report = test_artifact_generator.generate_measure_report(
+            self.phenotype_df, reporting_period, mapping_dak_id
+        )
+
         measure_report_filename = os.path.join(
-            self.output_directory, "test_bundle.json"
+            self.output_directory, "measure_report.json"
         )
         with open(measure_report_filename, "w") as f:
             f.write(json.dumps(measure_report, indent=2))
-
-        # Generate test artifacts using test_artifact_generator
-        artifacts = generate_test_artifacts(self.phenotype_df, reporting_period)
-
-        test_script_filename = os.path.join(self.output_directory, "test_script.json")
-        with open(test_script_filename, "w") as f:
-            f.write(json.dumps(artifacts[0], indent=2))
-
-        test_plan_filename = os.path.join(self.output_directory, "test_plan.json")
-        with open(test_plan_filename, "w") as f:
-            f.write(json.dumps(artifacts[1], indent=2))
 
         return measure_report
 

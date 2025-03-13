@@ -71,9 +71,10 @@ def run_bundle_test(
     """
     subfolder = os.path.join("tests/data/fhir_bundles", indicator_name)
     cql_bundle_path = os.path.join(subfolder, "cql_bundle.json")
-    test_bundle_path = os.path.join(subfolder, "test_bundle.json")
+    measure_report_path = os.path.join(subfolder, "measure_report.json")
     measure_name = indicator_name.replace(".", "")
 
+    # Load CQL bundle and POST to FHIR server
     with open(cql_bundle_path, "r") as f:
         cql_bundle = json.load(f)
     cql_bundle = sanitize_nan(cql_bundle)
@@ -95,13 +96,12 @@ def run_bundle_test(
         if resource_path and resource_path is not None:
             created_ids.append(resource_path)
 
-    with open(test_bundle_path, "r") as f:
+    # Load expected report and compare with evaluate response
+    with open(measure_report_path, "r") as f:
         expected_report = json.load(f)
     period = expected_report.get("period", {})
     period_start = period.get("start")
     period_end = period.get("end")
-    if period_start is None or period_end is None:
-        raise ValueError("Expected report missing period information")
 
     evaluate_url = f"{fhir_server_url}/Measure/{measure_name}/$evaluate-measure"
     params = {"periodStart": period_start, "periodEnd": period_end}
@@ -112,6 +112,8 @@ def run_bundle_test(
         raise ValueError(
             "Evaluate measure response does not contain MeasureReport resource."
         )
+
+    compare_measure_reports(evaluate_op_response.json(), expected_report)
 
     if cleanup_hapi:
         # Clean up all resources with ids in created_ids
