@@ -1,0 +1,99 @@
+{
+  "resourceType": "Bundle",
+  "type": "transaction",
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "id": "9c88db24-7b47-435d-bc39-b6f19c992cf6",
+        "meta": {
+          "profile": [
+            "http://smart.who.int/hiv/StructureDefinition/HivPatient"
+          ]
+        },
+        "active": true,
+        "gender": "female",
+        "birthDate": "1990-01-02",
+        "address": [
+          {
+            "text": "Sample Address",
+            "country": "US"
+          }
+        ],
+        "identifier": [
+          {
+            "value": 1
+          },
+          {
+            "value": 2
+          },
+          {
+            "value": 3
+          },
+          {
+            "value": 4
+          },
+          {
+            "value": 5
+          },
+          {
+            "value": 6
+          },
+          {
+            "value": 7
+          },
+          {
+            "value": 8
+          },
+          {
+            "value": 9
+          }
+        ],
+        "text": "Patient with no HIV tests and positive HIV diagnosis outside reporting period"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/9c88db24-7b47-435d-bc39-b6f19c992cf6"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Condition",
+        "id": "c896c2c2-6163-407b-8e46-38f41a60fdd4",
+        "meta": {
+          "profile": [
+            "http://smart.who.int/hiv/StructureDefinition/HivStatusCondition"
+          ]
+        },
+        "clinicalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+              "code": "active"
+            }
+          ]
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+                "code": "encounter-diagnosis"
+              }
+            ]
+          }
+        ],
+        "code": "#HIV.B.DE116",
+        "subject": {
+          "reference": "Patient/014ef6a2-4c12-47b2-a3f2-b6ef1b317c95"
+        },
+        "onsetDateTime": "2025-02-10T00:00:00Z"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Condition/c896c2c2-6163-407b-8e46-38f41a60fdd4"
+      }
+    }
+  ],
+  "id": "070e730c-d3ed-4baf-8603-f4681fc315d6"
+}

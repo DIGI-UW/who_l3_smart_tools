@@ -1,0 +1,144 @@
+{
+  "resourceType": "Bundle",
+  "type": "transaction",
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "id": "55082e56-295a-4101-9c2c-b16249e766f7",
+        "meta": {
+          "profile": [
+            "http://smart.who.int/hiv/StructureDefinition/HivPatient"
+          ]
+        },
+        "active": true,
+        "gender": "female",
+        "birthDate": "1990-01-02",
+        "address": [
+          {
+            "text": "Sample Address",
+            "country": "US"
+          }
+        ],
+        "identifier": [
+          {
+            "value": 1
+          },
+          {
+            "value": 2
+          },
+          {
+            "value": 3
+          },
+          {
+            "value": 4
+          },
+          {
+            "value": 5
+          },
+          {
+            "value": 6
+          },
+          {
+            "value": 7
+          },
+          {
+            "value": 8
+          },
+          {
+            "value": 9
+          },
+          {
+            "value": 10
+          }
+        ],
+        "text": "Patient with HIV test within period but no result with diagnosis within period"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/55082e56-295a-4101-9c2c-b16249e766f7"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "c188721e-26fe-4d53-b4e4-21a0e6566012",
+        "meta": {
+          "profile": [
+            "http://smart.who.int/hiv/StructureDefinition/HivHivTest"
+          ]
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://smart.who.int/hiv/CodeSystem/HIVConcepts",
+              "code": "HIV.B.DE81",
+              "display": "HIV test type"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/014ef6a2-4c12-47b2-a3f2-b6ef1b317c95"
+        },
+        "effectiveDateTime": "2025-01-05T00:00:00Z",
+        "issued": "2023-01-03T15:00:00Z",
+        "valueCodeableConcept": "#HIV.B.DE112",
+        "issuedDateTime": "2025-02-10T00:00:00Z"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Observation/c188721e-26fe-4d53-b4e4-21a0e6566012"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Condition",
+        "id": "5f608154-f789-466e-b9de-6ed518e3319e",
+        "meta": {
+          "profile": [
+            "http://smart.who.int/hiv/StructureDefinition/HivStatusCondition"
+          ]
+        },
+        "clinicalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+              "code": "active"
+            }
+          ]
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+                "code": "encounter-diagnosis"
+              }
+            ]
+          }
+        ],
+        "code": "#HIV.B.DE116",
+        "subject": {
+          "reference": "Patient/014ef6a2-4c12-47b2-a3f2-b6ef1b317c95"
+        },
+        "onsetDateTime": "2025-01-10T00:00:00Z"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Condition/5f608154-f789-466e-b9de-6ed518e3319e"
+      }
+    }
+  ],
+  "id": "0e355dcb-770b-45ad-a53a-77387f3bf63f"
+}
